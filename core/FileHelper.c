@@ -6,12 +6,14 @@
 #include "Macros.h"
 #include "stdio.h"
 #include "string.h"
-
+#include <sys/time.h>
+#include <sys/stat.h>
 #define MAX_LINE_SIZE 1000
 #define MAX_RESULT_SIZE MAX_LINE_SIZE*999
 #define MAX_FILE_RESULT_COUNT 9999
 #define MAX_FILE_NAME 1000
 #define FILE_FLAG 0
+#define MODIFIED_TIME_LEN 21
 
 String fileAddressMaker(String path, String filename);
 
@@ -189,6 +191,23 @@ enum Boolean isFolderExist(String path) {
         return False;
     }
     return False;
+}
+/**
+ * get last modified of the file
+ * @attention free the result of this function
+ * @param path path/to/file
+ * @param filename
+ * @return last modified time of the file
+ */
+String getLastModifiedOfFile(String path, String filename) {
+    String fileAddress = fileAddressMaker(path, filename);
+
+    String result = malloc(MODIFIED_TIME_LEN * sizeof(char));
+    struct stat attrib;
+    stat(fileAddress, &attrib);
+    char time[50];
+    strftime(time, 50, "%Y-%m-%d %H:%M:%S", localtime(&attrib.st_mtime));
+    sprintf(result, "%s", time);
 }
 
 /**

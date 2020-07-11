@@ -20,6 +20,8 @@
 //#define COLOR_BLOCK_RED 4
 //#define COLOR_CYAN 11
 
+void runCli(int argc, String *argv);
+
 void changeConsoleColor(int colorCode);
 
-void printColord(String content, int colorCode);
+void printColored(String content, int colorCode);

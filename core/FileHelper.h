@@ -19,3 +19,5 @@ enum Boolean isFileExist(String path, String filename);
 enum Boolean isFolderExist(String path);
 
 enum Boolean deleteFile(String filePath, String filename);
+
+String getLastModifiedOfFile(String path, String filename) ;
