@@ -4,8 +4,6 @@
 #include "stdlib.h"
 
 
-String currentTime();
-
 String getDate() {
     String dateString = (char *) malloc(sizeof(char) * 30);
     time_t t = time(NULL);
