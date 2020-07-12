@@ -6,15 +6,7 @@
 #include "examples/getListOFAllFiles.h"
 #include "diffChecker/StringDiffChecker.h"
 
-String rangeSelect(String string , int start , int end){
-    String result = (String)malloc(sizeof(char)*(end-start+1));
-    int index = 0 ;
-    for (int i = start; i <= end; ++i) {
-        result[index++]= string[i];
-    }
-    result[index]='\0';
-    return result;
-}
+
 void findLastEdit(){
     int fileCount;
     String * files = getFilesInDirectory(".\\",&fileCount);
