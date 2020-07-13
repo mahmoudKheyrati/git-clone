@@ -5,11 +5,13 @@
 #include "stdlib.h"
 #include "string.h"
 
+#define MAX_FILE_ENTRY_ITEM_LEN 200
+
 enum FileLastEditStatus{FILE_AVAILABLE, FILE_REMOVED};
 struct FileEditEntry{
-    char path[1000];
-    char filename[1000];
-    char lastEdit[1000];
+    char path[MAX_FILE_ENTRY_ITEM_LEN];
+    char filename[MAX_FILE_ENTRY_ITEM_LEN];
+    char lastEdit[MAX_FILE_ENTRY_ITEM_LEN];
     short int status;
 };
 
