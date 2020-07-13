@@ -7,6 +7,15 @@
 enum DIFF_TYPE {
     DELETE = -1, EQUAL, INSERT
 };
+
+struct Point {
+    long x, y;
+};
+struct DifferenceSequence {
+    short int Type;
+    struct Point start;
+    struct Point end;
+};
 struct DifferencePoint {
     short int diffType;
     long int start;
@@ -17,12 +26,15 @@ struct DifferencePoint {
 };
 struct DifferenceList {
     int length;
-    struct DifferencePoint *differencePoints;
+    struct DifferenceSequence *differenceSequences;
     int size;
 };
-void initList(struct DifferenceList * list , int initSize);
-void expandList(struct DifferenceList *list);
-void add(struct DifferenceList * list , struct DifferencePoint point);
 
-struct DifferenceList * StringDiffChecker(String stringA, String stringB) ;
+void initList(struct DifferenceList *list, int initSize);
+
+void expandList(struct DifferenceList *list);
+
+void add(struct DifferenceList *list, struct DifferenceSequence sequence);
+
+struct DifferenceList *StringDiffChecker(String stringA, String stringB);
 

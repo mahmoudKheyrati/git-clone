@@ -7,45 +7,49 @@
 #define INIT_LIST_SIZE 20
 
 void initList(struct DifferenceList *list, int initSize) {
-    struct DifferencePoint *points = malloc(sizeof(struct DifferencePoint) * initSize);
+    struct DifferenceSequence *sequences = malloc(sizeof(struct DifferenceSequence) * initSize);
     list->size = initSize;
     list->length = 0;
-    list->differencePoints = points;
+    list->differenceSequences = sequences;
 }
 
 void expandList(struct DifferenceList *list) {
-    struct DifferencePoint *points = malloc(sizeof(struct DifferencePoint) * list->size * 2);
+    struct DifferenceSequence *sequences = malloc(sizeof(struct DifferenceSequence) * list->size * 2);
     for (int i = 0; i < list->length; ++i) {
-        points[i] = list->differencePoints[i];
+        sequences[i] = list->differenceSequences[i];
     }
-    free(list->differencePoints);
-    list->differencePoints = points;
+    free(list->differenceSequences);
+    list->differenceSequences = sequences;
 }
 
-void add(struct DifferenceList *list, struct DifferencePoint point) {
+void add(struct DifferenceList *list, struct DifferenceSequence sequence) {
     if (list->length == list->size) {
         expandList(list);
     }
-    list->differencePoints[list->length++] = point;
+    list->differenceSequences[list->length++] = sequence;
 }
 
 struct EqualPoint{
     int startX, startY, endX, endY
 };
-void parser(struct EqualPoint * points , int size,String oldString , String newString,int maxX, int maxY){
+struct DifferenceList* parser(struct EqualPoint * points , int size,String oldString , String newString,int maxX, int maxY){
     struct DifferenceList *list = malloc(sizeof(struct DifferenceList));
     initList(list,INIT_LIST_SIZE);
 
-
-
     if(points[0].startX== 0){
         //update
-        print("update\t");
+        print("insert\t");
         print("(%i , %i) -> (%i , %i)\n", 0 , 0, points[0].startX, points[0].startY);
+        struct DifferenceSequence sequence= {INSERT,{0,0},{points[0].startX, points[0].startY}};
+        add(list, sequence);
+
     }else if (points[0].startY== 0){
         //delete
         print("delete\t");
         print("(%i , %i) -> (%i , %i)\n", 0 , 0, points[0].startX, points[0].startY);
+        struct DifferenceSequence sequence= {DELETE,{0,0},{points[0].startX, points[0].startY}};
+        add(list, sequence);
+
     }
 
 
@@ -54,23 +58,34 @@ void parser(struct EqualPoint * points , int size,String oldString , String newS
         struct EqualPoint secondSequence= points[i];
         if(firstSequence.endX== secondSequence.startX){
             //update
-            print("update\t");
+            print("insert\t");
             print("(%i , %i) -> (%i , %i)\n", firstSequence.endX , firstSequence.endY, secondSequence.startX, secondSequence.startY);
+            struct DifferenceSequence sequence= {INSERT,{firstSequence.endX , firstSequence.endY},{secondSequence.startX, secondSequence.startY}};
+            add(list, sequence);
+
         }else if (firstSequence.endY == secondSequence.startY){
             //delete
             print("delete\t");
             print("(%i , %i) -> (%i , %i)\n", firstSequence.endX , firstSequence.endY, secondSequence.startX, secondSequence.startY);
+            struct DifferenceSequence sequence= {DELETE,{firstSequence.endX , firstSequence.endY},{secondSequence.startX, secondSequence.startY}};
+            add(list, sequence);
         }
     }
     if(points[size-1].endX == maxX){
         //update
-        print("update\t");
+        print("insert\t");
         print("(%i , %i) -> (%i , %i)\n", points[size-1].endX , points[size-1].endY, maxX, maxY);
+        struct DifferenceSequence sequence= {INSERT,{points[size-1].endX , points[size-1].endY},{ maxX, maxY}};
+        add(list, sequence);
     }else if (points[size-1].endY == maxY){
         //delete
         print("delete\t");
         print("(%i , %i) -> (%i , %i)\n", points[size-1].endX , points[size-1].endY, maxX, maxY);
+        struct DifferenceSequence sequence= {DELETE,{points[size-1].endX , points[size-1].endY},{ maxX, maxY}};
+        add(list, sequence);
     }
+
+    return list;
 
 
 }
@@ -127,8 +142,7 @@ struct DifferenceList *StringDiffChecker(String stringA, String stringB) {
             if (xEnd >= lenA && yEnd >= lenB) {
 //                /* solution has been found */
                 print("find\n");
-                parser(points, equalSequenceCount,lenA,lenB);
-                return NULL;
+                return parser(points, equalSequenceCount,stringA,stringB, lenA,lenB);
             }
         }
         int startX = finalX - sequenceLen;
