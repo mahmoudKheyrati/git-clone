@@ -25,7 +25,7 @@ struct DifferenceList* diffReader(String path, String filename){
     FILE * file = fopen(fileAddress,"rb");
     fread(&list->size,1 , sizeof( int),file);
     fread(&list->length,1 , sizeof( int),file);
-    print("%i , %i\n", list->size, list->length);
+//    print("%i , %i\n", list->size, list->length);
 
     fread(list->differenceSequences,list->length, sizeof(struct DifferenceSequence),file);
     fclose(file);

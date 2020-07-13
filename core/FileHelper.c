@@ -150,6 +150,7 @@ String *getFoldersInDirectory(String path, int *n) {
  */
 enum Boolean makeDirectories(String path[], int n) {
     String beforePath = malloc(sizeof(char) * MAX_LINE_SIZE);
+    beforePath[0]='\0';
     enum Boolean isOk = True;
     for (int i = 0; i < n; ++i) {
         int status = mkdir(strcat(beforePath, path[i]));
