@@ -1,14 +1,11 @@
 #include "LogDbExample.h"
 
-String str(){
-    return "1735aedf2f9d92d73d2c805d8c2d924a";
-}
 void writeToLogListExample() {
 
     struct LogList *list = malloc(sizeof(struct LogList));
     initLogList(list, 20);
 //// write to db
-    String id = str();
+    String id = "1735aedf2f9d92d73d2c805d8c2d924a";
     String date = getDate();
 
     struct LogEntry entry = {.id=id,.title="firstCommit",.description="something else",.__commitPath="path/to/commit",.__commit_filename="commit filename"};

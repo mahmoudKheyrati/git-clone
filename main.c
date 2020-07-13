@@ -13,9 +13,11 @@
 #include "examples/dbs/LogDbExample.h"
 #include "examples/dbs/lastEditDbExample.h"
 #include "examples/hasherExample.h"
+#include "examples/dbs/commitDbExample.h"
 
 int main(int argc, String *argv) {
 
 //    runCli(argc, argv);
-
+//    writeToCommitListExample();
+    readFromCommitDbExample();
 }
