@@ -15,6 +15,7 @@ struct DifferenceSequence {
     short int Type;
     struct Point start;
     struct Point end;
+    String data;
 };
 struct DifferencePoint {
     short int diffType;

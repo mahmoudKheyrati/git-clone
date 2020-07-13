@@ -28,11 +28,43 @@ void findLastEdit(){
 int main(int argc, String *argv) {
 
 //    runCli(argc, argv);
+    String A = "ABCABBA";
+    String B= "CBABAC";
+
+    long int lenA = strlen(A);
+    long int lenB= strlen(B);
+
     struct DifferenceList * list = StringDiffChecker("ABCABBA", "CBABAC");
+
     for (int i = 0; i < list->length; ++i) {
-        struct DifferenceSequence sequence = list->differenceSequences[i];
-        print("%i - (%li, %li ) -> (%li , %li)\n",sequence.Type, sequence.start.x, sequence.start.y, sequence.end.x,sequence.end.y );
+        struct DifferenceSequence currentSequence = list->differenceSequences[i];
+//        print("%i \t (%li, %li ) -> (%li , %li)\n",currentSequence.Type, currentSequence.start.x, currentSequence.start.y, currentSequence.end.x,currentSequence.end.y );
+
+        struct DifferenceSequence nextSequence = list->differenceSequences[i+1];
+        if (currentSequence.Type == INSERT) {
+//            print("insert %i-%i\n");
+//            for (int j = currentSequence.start.y; j < currentSequence.end.y; ++j) {
+//                print("%c",B[j]);
+//            }
+            for (int k = 0; k < currentSequence.end.y- currentSequence.start.y; ++k) {
+                print("%c",currentSequence.data[k]);
+            }
+        }
+        if (currentSequence.Type == DELETE) {
+//            print("delete\n");
+        }
+        long diffX =nextSequence.start.x-  currentSequence.end.x;
+        long diffY =nextSequence.start.y-  currentSequence.end.y;
+        if(diffX==diffY ){
+            for (int j = currentSequence.end.x; j < nextSequence.start.x; ++j) {
+                print("%c", A[j]);
+            }
+//            print("equlity happend at %li\n", currentSequence.end.x);
+            continue;
+        }
     }
+
+
     return 0 ;
 //    String A = "ABCABBA";
 //    String B = "CBABAC";

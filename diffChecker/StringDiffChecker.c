@@ -29,59 +29,71 @@ void add(struct DifferenceList *list, struct DifferenceSequence sequence) {
     list->differenceSequences[list->length++] = sequence;
 }
 
-struct EqualPoint{
-    int startX, startY, endX, endY
+struct EqualPoint {
+    int startX, startY, endX, endY;
+    String data;
 };
-struct DifferenceList* parser(struct EqualPoint * points , int size,String oldString , String newString,int maxX, int maxY){
-    struct DifferenceList *list = malloc(sizeof(struct DifferenceList));
-    initList(list,INIT_LIST_SIZE);
 
-    if(points[0].startX== 0){
+struct DifferenceList *
+parser(struct EqualPoint *points, int size, String oldString, String newString, int maxX, int maxY) {
+    struct DifferenceList *list = malloc(sizeof(struct DifferenceList));
+    initList(list, INIT_LIST_SIZE);
+
+    if (points[0].startX == 0) {
         //update
-        print("insert\t");
-        print("(%i , %i) -> (%i , %i)\n", 0 , 0, points[0].startX, points[0].startY);
-        struct DifferenceSequence sequence= {INSERT,{0,0},{points[0].startX, points[0].startY}};
+//        print("insert\t");
+//        print("(%i , %i) -> (%i , %i)\n", 0 , 0, points[0].startX, points[0].startY);
+        String data = rangeSelect(newString, 0, points[0].startY);
+
+        struct DifferenceSequence sequence = {INSERT, {0, 0}, {points[0].startX, points[0].startY}, .data=data};
         add(list, sequence);
 
-    }else if (points[0].startY== 0){
+    } else if (points[0].startY == 0) {
         //delete
-        print("delete\t");
-        print("(%i , %i) -> (%i , %i)\n", 0 , 0, points[0].startX, points[0].startY);
-        struct DifferenceSequence sequence= {DELETE,{0,0},{points[0].startX, points[0].startY}};
+//        print("delete\t");
+//        print("(%i , %i) -> (%i , %i)\n", 0 , 0, points[0].startX, points[0].startY);
+        struct DifferenceSequence sequence = {DELETE, {0, 0}, {points[0].startX, points[0].startY}};
         add(list, sequence);
 
     }
 
 
     for (int i = 1; i < size; ++i) {
-        struct EqualPoint firstSequence=points[i - 1];
-        struct EqualPoint secondSequence= points[i];
-        if(firstSequence.endX== secondSequence.startX){
+        struct EqualPoint firstSequence = points[i - 1];
+        struct EqualPoint secondSequence = points[i];
+        if (firstSequence.endX == secondSequence.startX) {
             //update
-            print("insert\t");
-            print("(%i , %i) -> (%i , %i)\n", firstSequence.endX , firstSequence.endY, secondSequence.startX, secondSequence.startY);
-            struct DifferenceSequence sequence= {INSERT,{firstSequence.endX , firstSequence.endY},{secondSequence.startX, secondSequence.startY}};
+//            print("insert\t");
+//            print("(%i , %i) -> (%i , %i)\n", firstSequence.endX , firstSequence.endY, secondSequence.startX, secondSequence.startY);
+            String data = rangeSelect(newString, firstSequence.endY, secondSequence.startY);
+
+            struct DifferenceSequence sequence = {INSERT, {firstSequence.endX, firstSequence.endY},
+                                                  {secondSequence.startX, secondSequence.startY}, .data=data};
             add(list, sequence);
 
-        }else if (firstSequence.endY == secondSequence.startY){
+        } else if (firstSequence.endY == secondSequence.startY) {
             //delete
-            print("delete\t");
-            print("(%i , %i) -> (%i , %i)\n", firstSequence.endX , firstSequence.endY, secondSequence.startX, secondSequence.startY);
-            struct DifferenceSequence sequence= {DELETE,{firstSequence.endX , firstSequence.endY},{secondSequence.startX, secondSequence.startY}};
+//            print("delete\t");
+//            print("(%i , %i) -> (%i , %i)\n", firstSequence.endX , firstSequence.endY, secondSequence.startX, secondSequence.startY);
+            struct DifferenceSequence sequence = {DELETE, {firstSequence.endX, firstSequence.endY},
+                                                  {secondSequence.startX, secondSequence.startY}};
             add(list, sequence);
         }
     }
-    if(points[size-1].endX == maxX){
+    if (points[size - 1].endX == maxX) {
         //update
-        print("insert\t");
-        print("(%i , %i) -> (%i , %i)\n", points[size-1].endX , points[size-1].endY, maxX, maxY);
-        struct DifferenceSequence sequence= {INSERT,{points[size-1].endX , points[size-1].endY},{ maxX, maxY}};
+//        print("insert\t");
+//        print("(%i , %i) -> (%i , %i)\n", points[size-1].endX , points[size-1].endY, maxX, maxY);
+        String data = rangeSelect(newString, points[size - 1].endY, maxY);
+
+        struct DifferenceSequence sequence = {INSERT, {points[size - 1].endX, points[size - 1].endY},
+                                              {maxX, maxY}, .data=data};
         add(list, sequence);
-    }else if (points[size-1].endY == maxY){
+    } else if (points[size - 1].endY == maxY) {
         //delete
-        print("delete\t");
-        print("(%i , %i) -> (%i , %i)\n", points[size-1].endX , points[size-1].endY, maxX, maxY);
-        struct DifferenceSequence sequence= {DELETE,{points[size-1].endX , points[size-1].endY},{ maxX, maxY}};
+//        print("delete\t");
+//        print("(%i , %i) -> (%i , %i)\n", points[size-1].endX , points[size-1].endY, maxX, maxY);
+        struct DifferenceSequence sequence = {DELETE, {points[size - 1].endX, points[size - 1].endY}, {maxX, maxY}};
         add(list, sequence);
     }
 
@@ -89,13 +101,14 @@ struct DifferenceList* parser(struct EqualPoint * points , int size,String oldSt
 
 
 }
+
 struct DifferenceList *StringDiffChecker(String stringA, String stringB) {
     int lenA = strlen(stringA);
     int lenB = strlen(stringB);
     int len = lenA + lenB;
 
-   int equalSequenceCount = 0 ;
-   struct EqualPoint *points= malloc(sizeof(struct EqualPoint)*1000);
+    int equalSequenceCount = 0;
+    struct EqualPoint *points = malloc(sizeof(struct EqualPoint) * 1000);
 
     int vertex[MAX_VERTEX];
     vertex[1] = 0;
@@ -141,16 +154,16 @@ struct DifferenceList *StringDiffChecker(String stringA, String stringB) {
             // check for solution
             if (xEnd >= lenA && yEnd >= lenB) {
 //                /* solution has been found */
-                print("find\n");
-                return parser(points, equalSequenceCount,stringA,stringB, lenA,lenB);
+//                print("find\n");
+                return parser(points, equalSequenceCount, stringA, stringB, lenA, lenB);
             }
         }
         int startX = finalX - sequenceLen;
         int startY = finalY - sequenceLen;
         if (!(startX == finalX && startY == finalY)) {
-            print("equal : (%i , %i) -> (%i , %i)\n", startX, startY, finalX, finalY);
-            struct EqualPoint point={.startX=startX,.startY=startY, .endX=finalX,.endY=finalY};
-            points[equalSequenceCount++]= point;
+//            print("equal : (%i , %i) -> (%i , %i)\n", startX, startY, finalX, finalY);
+            struct EqualPoint point = {.startX=startX, .startY=startY, .endX=finalX, .endY=finalY};
+            points[equalSequenceCount++] = point;
         }
     }
 }
