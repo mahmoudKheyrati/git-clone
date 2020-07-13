@@ -4,8 +4,6 @@
 #include "stdlib.h"
 
 
-String currentTime();
-
 String getDate() {
     String dateString = (char *) malloc(sizeof(char) * 30);
     time_t t = time(NULL);
@@ -20,5 +18,15 @@ long int getCurrentTime() {
     gettimeofday(&tv, NULL);
     print("%li\n", tv.tv_sec);
 
+}
+
+String rangeSelect(String string , int start , int end){
+    String result = (String)malloc(sizeof(char)*(end-start+1));
+    int index = 0 ;
+    for (int i = start; i <= end; ++i) {
+        result[index++]= string[i];
+    }
+    result[index]='\0';
+    return result;
 }
 
