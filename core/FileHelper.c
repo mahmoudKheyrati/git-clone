@@ -1,19 +1,4 @@
 #include "FileHelper.h"
-#include <stdlib.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include "Macros.h"
-#include "stdio.h"
-#include "string.h"
-#include <sys/time.h>
-#include <sys/stat.h>
-#define MAX_LINE_SIZE 1000
-#define MAX_RESULT_SIZE MAX_LINE_SIZE*999
-#define MAX_FILE_RESULT_COUNT 9999
-#define MAX_FILE_NAME 1000
-#define FILE_FLAG 0
-#define MODIFIED_TIME_LEN 21
 
 String fileAddressMaker(String path, String filename);
 

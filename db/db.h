@@ -4,6 +4,9 @@
 #include "../core/Core.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "commitDb.h"
+#include "lastEditDb.h"
+#include "logDb.h"
 
 #define ROOT_FOLDER_NAME "./.JIT"
 

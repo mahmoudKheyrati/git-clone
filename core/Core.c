@@ -1,8 +1,5 @@
 #include <sys/time.h>
 #include "Core.h"
-#include "stdio.h"
-#include "stdlib.h"
-
 
 String getDate() {
     String dateString = (char *) malloc(sizeof(char) * 30);

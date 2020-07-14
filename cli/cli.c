@@ -1,13 +1,5 @@
 #include "cli.h"
-#include <windows.h>
-#include <dirent.h>
-#include "../core/Core.h"
-#include "stdio.h"
-#include "stdlib.h"
 
-#define COMMIT_ID_SIZE 9
-#define TITLE_SIZE 60
-#define DESCRIPTION_SIZE 120
 
 void initCli();
 

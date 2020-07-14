@@ -2,9 +2,6 @@
 
 
 #include "../core/Core.h"
-#include "string.h"
-#include "stdio.h"
-#include "stdlib.h"
 
 enum COMMIT_FILE_STATUS {
     REMOVED_FILE = -1, CHANGED_FILE , ADD_NEW_FILE

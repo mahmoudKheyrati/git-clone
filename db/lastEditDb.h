@@ -1,9 +1,7 @@
 #pragma once
 
 #include "../core/Core.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+
 
 #define MAX_FILE_ENTRY_ITEM_LEN 200
 

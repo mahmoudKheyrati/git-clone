@@ -2,6 +2,10 @@
 
 #include "FileHelper.h"
 #include "Macros.h"
+#include "string.h"
+#include "stdio.h"
+#include "hasher.h"
+
 
 String getDate();
 

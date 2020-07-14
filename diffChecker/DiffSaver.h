@@ -2,7 +2,6 @@
 
 #include "../core/Core.h"
 #include "StringDiffChecker.h"
-#include "stdlib.h"
 
 void diffSaver(struct DifferenceList * list, String path , String filename);
 
