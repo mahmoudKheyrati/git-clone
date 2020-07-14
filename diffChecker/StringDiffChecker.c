@@ -26,10 +26,6 @@ void add(struct DifferenceList *list, struct DifferenceSequence sequence) {
     list->differenceSequences[list->length++] = sequence;
 }
 
-struct EqualPoint {
-    int startX, startY, endX, endY;
-    String data;
-};
 
 struct DifferenceList *
 parser(struct EqualPoint *points, int size, String oldString, String newString, int maxX, int maxY) {
@@ -158,7 +154,7 @@ struct DifferenceList *StringDiffChecker(String stringA, String stringB) {
         int startX = finalX - sequenceLen;
         int startY = finalY - sequenceLen;
         if (!(startX == finalX && startY == finalY)) {
-//            print("equal : (%i , %i) -> (%i , %i)\n", startX, startY, finalX, finalY);
+            print("equal : (%i , %i) -> (%i , %i)\n", startX, startY, finalX, finalY);
             struct EqualPoint point = {.startX=startX, .startY=startY, .endX=finalX, .endY=finalY};
             points[equalSequenceCount++] = point;
         }

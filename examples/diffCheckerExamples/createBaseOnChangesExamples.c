@@ -14,6 +14,7 @@ void createSingleFileWithChangesExample(){
     long int lenB = strlen(B);
 
     struct DifferenceList *list = StringDiffChecker(A, B);
+
     diffSaver(list, "./test", "myChanges.txt");
     struct DifferenceList* changeList = diffReader("./test","myChanges.txt");
     nextSequenceGenerator(A,changeList,"./created","basedOnChanges.txt");
