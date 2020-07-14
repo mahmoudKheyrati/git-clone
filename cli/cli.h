@@ -1,6 +1,13 @@
 #pragma once
 
-#include "../core/Core.h"
+#include "../app/App.h"
+#include <windows.h>
+#include <dirent.h>
+
+#define COMMIT_ID_SIZE 9
+#define TITLE_SIZE 60
+#define DESCRIPTION_SIZE 120
+
 
 #define COLOR_WHITE 240
 #define COLOR_YELLOW 14
@@ -10,15 +17,7 @@
 #define COLOR_BLOCK_YELLOW 224
 #define COLOR_BLOCK_BLUE 159
 #define COLOR_BLOCK_RED 79
-//#define COLOR_WHITE 7
-//#define COLOR_YELLOW 6
-//#define COLOR_LIGHT_BLUE 1
-//#define COLOR_RED 12
-//#define COLOR_BLOCK_GREEN 3
-//#define COLOR_BLOCK_YELLOW 2
-//#define COLOR_BLOCK_BLUE 9
-//#define COLOR_BLOCK_RED 4
-//#define COLOR_CYAN 11
+
 
 void runCli(int argc, String *argv);
 

@@ -1,9 +1,6 @@
 #pragma once
 
 #include "../core/Core.h"
-#include "string.h"
-#include "stdio.h"
-#include "stdlib.h"
 
 struct LogEntry{
     String id;

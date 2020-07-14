@@ -1,7 +1,4 @@
 #include "StringDiffChecker.h"
-#include "../core/Core.h"
-#include "stdlib.h"
-#include "stdio.h"
 
 #define MAX_VERTEX 10000
 #define INIT_LIST_SIZE 20

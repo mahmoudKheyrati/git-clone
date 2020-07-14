@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../core/Core.h"
-#include "string.h"
 
 // always insert from b , deletion from a
 enum DIFF_TYPE {
