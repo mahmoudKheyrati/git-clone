@@ -14,10 +14,13 @@
 #include "examples/dbs/lastEditDbExample.h"
 #include "examples/hasherExample.h"
 #include "examples/dbs/commitDbExample.h"
+#include "db/db.h"
+#include "examples/dbs/configDbExample.h"
 
 int main(int argc, String *argv) {
 
 //    runCli(argc, argv);
 //    writeToCommitListExample();
-    readFromCommitDbExample();
+//    saveConfigDbExamples();
+//    loadConfigDbExample();
 }

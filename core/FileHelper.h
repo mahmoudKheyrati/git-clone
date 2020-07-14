@@ -23,3 +23,5 @@ enum Boolean deleteFile(String filePath, String filename);
 String getLastModifiedOfFile(String path, String filename);
 
 String fileAddressMaker(String path, String filename);
+
+String * splitPath(String path,int* count);
