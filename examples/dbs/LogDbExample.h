@@ -4,7 +4,8 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
-#include "../../db/lastEditDb.h"
+#include "../../db/logDb.h"
 
-void writeToEditListExample();
-void readFromEditDbExample();
+
+void readFromLogDbExample();
+void writeToLogListExample();

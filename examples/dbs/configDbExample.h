@@ -4,7 +4,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
-#include "../../db/lastEditDb.h"
+#include "../../db/db.h"
 
-void writeToEditListExample();
-void readFromEditDbExample();
+void saveConfigDbExamples();
+void loadConfigDbExample();

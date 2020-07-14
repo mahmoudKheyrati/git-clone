@@ -40,7 +40,7 @@ struct LastEditList* getLastEditList(String path, String filename){
     FILE * file = fopen(fileAddress,"rb");
     fread(&list->size,1 , sizeof( int),file);
     fread(&list->length,1 , sizeof( int),file);
-    print("%i , %i\n", list->size, list->length);
+//    print("%i , %i\n", list->size, list->length);
 
 //    struct FileEditEntry entry;
 //    fread(&entry,1, sizeof(struct FileEditEntry), file);

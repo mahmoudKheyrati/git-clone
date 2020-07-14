@@ -10,11 +10,17 @@
 #include "diffChecker/StringDiffChecker.h"
 #include "diffChecker/DiffSaver.h"
 #include "diffChecker/Genetator.h"
-#include "db/lastEditDb.h"
+#include "examples/dbs/LogDbExample.h"
+#include "examples/dbs/lastEditDbExample.h"
+#include "examples/hasherExample.h"
+#include "examples/dbs/commitDbExample.h"
+#include "db/db.h"
+#include "examples/dbs/configDbExample.h"
 
 int main(int argc, String *argv) {
 
 //    runCli(argc, argv);
-
-
+//    writeToCommitListExample();
+//    saveConfigDbExamples();
+//    loadConfigDbExample();
 }

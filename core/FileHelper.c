@@ -238,3 +238,25 @@ enum Boolean deleteFile(String filePath, String filename) {
     int res = remove(fileAddress);
     return res ? False : True;
 }
+
+/**
+ * split path by / for example path/to/file don't call with . or ./ in the beggining of it
+ * @param path
+ * @return string[] of folder names
+ */
+String * splitPath(String path,int* count){
+    int folderCount = 0 ;
+    int pathLen=strlen(path);
+    for (int i = 0; i < pathLen; ++i) {
+        if(path[i]=='/') folderCount++;
+    }
+    String *result = malloc(sizeof(char)*(folderCount+1));
+    int resIndex= 0 ;
+    char * token = strtok(path, "/");
+    while( token != NULL ) {
+        result[resIndex++]= token; //printing each token
+        token = strtok(NULL, " ");
+    }
+    *count= folderCount+1;
+    return result;
+}
