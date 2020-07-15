@@ -13,6 +13,6 @@ void trackFilesExample(){
     for (int i = 0; i < eSize; ++i) {
         print("eee : %s\n", edited[i]);
     }
-    saveEditList(list,"./dbs/lastEditDb", "editDb.txt");
+//    saveEditList(list,"./dbs/lastEditDb", "editDb.txt");
 
 }

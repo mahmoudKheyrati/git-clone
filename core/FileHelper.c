@@ -161,6 +161,18 @@ enum Boolean isFileExist(String path, String filename) {
     return notExist ? False : True;
 
 }
+/**
+ * check if the file is exist or not
+ * @param path
+ * @param filename
+ * @return 1 if exits and 0 for not exists
+ */
+enum Boolean isFileExist2(String fileAddress) {
+    struct stat buffer;
+    int notExist = stat(fileAddress, &buffer);
+    return notExist ? False : True;
+
+}
 
 /**
  *
