@@ -42,6 +42,8 @@ int ** createLookupTable(String firstString , String secondString){
 struct DifferenceList* parsLookUpTable(int ** list , String firstString, String secondString, long int m , long  int n){
     struct EqualPoint *reversedPoints = malloc(sizeof(struct EqualPoint) * MAX_SEQUENCE_SUPPORT);
     struct EqualPoint *points = malloc(sizeof(struct EqualPoint) * MAX_SEQUENCE_SUPPORT);
+    struct EqualPoint *mainPoints = malloc(sizeof(struct EqualPoint) * MAX_SEQUENCE_SUPPORT);
+    int mainPointsSize = 0 ;
     int sequencesCount = 0 ;
     // iterate throw list start with bottom right corner of the lookup table
     //for last char
@@ -84,6 +86,32 @@ struct DifferenceList* parsLookUpTable(int ** list , String firstString, String 
         points[i]= reversedPoints[sequencesCount-i-1];
         print("(%li, %li) -> (%li, %li)\n",points[i].startX,points[i].startY,points[i].endX,points[i].endY);
     }
-    return parser( points, sequencesCount, firstString, secondString, m, n);
+    print("------------\n");
+
+
+    for (int k = 0; k < sequencesCount; ++k) {
+        struct EqualPoint cur=points[k];
+        struct EqualPoint next=points[k+1];
+        long int startX = cur.startX;
+        long int startY = cur.startY;
+        long int count = 0 ;
+        // matches
+        while (cur.endX== next.startX && cur.endY==next.startY){
+            cur = next;
+            next=points[k+2+count];
+            count++;
+        }
+        cur.startX = startX;
+        cur.startY=startY;
+        mainPoints[mainPointsSize++]=cur;
+
+        print("(%li, %li) -> (%li, %li)\n",cur.startX,cur.startY,cur.endX,cur.endY);
+
+
+        k+=count;
+    }
+
+
+    return parser( mainPoints, mainPointsSize, firstString, secondString, m, n);
 
 }

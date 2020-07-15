@@ -17,7 +17,7 @@ int main(int argc, String *argv) {
     long int lenA = strlen(A);
     long int lenB = strlen(B);
     int** lookupTable = createLookupTable(A,B);
-    struct DifferenceList* differenceList = parsLookUpTable(lookupTable,A,B,lenA,lenB);
+    struct DifferenceList* differenceList = parsLookUpTable(lookupTable,A+1,B+1,lenA,lenB);
 
     struct DifferenceList *list = differenceList;
     struct DifferenceList *list2 = StringDiffChecker(A, B);

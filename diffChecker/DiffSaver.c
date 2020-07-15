@@ -2,6 +2,13 @@
 
 
 void diffSaver(struct DifferenceList * list, String path , String filename){
+    for (int i = 0; i < list->length; ++i) {
+//        struct DifferenceSequence cur = list->differenceSequences[i];
+//        print("saver : ");
+//        print("(%li, %li) -> (%li, %li)\n",cur.start.x,cur.start.y,cur.end.x,cur.end.y);
+
+    }
+//    print("-----------------\n\n");
     String fileAddress = fileAddressMaker(path, filename);
     FILE * file = fopen(fileAddress,"wb");
     fwrite(&list->size,1 , sizeof( int),file);
