@@ -28,6 +28,22 @@ String hashFile(String filePath, String filename){
     String hashCode = malloc(sizeof(char)*50);
     hashCode= readFile("./", outputName);
 //    print("%s\n", hashCode);
+//    free(command);
+//    deleteFile(".\\", outputName);
+    return hashCode;
+}
+
+String hashFile2(String fileAddress){
+    // hash string with the help of java jar file
+
+    String outputName = "tempHashCode.out.junk.txt";
+
+    String command = malloc((strlen(fileAddress)+50)* sizeof(char));
+    sprintf(command,"java -jar Hasher.jar -f %s > %s",fileAddress,outputName);
+    system(command);
+    String hashCode = malloc(sizeof(char)*50);
+    hashCode= readFile("./", outputName);
+//    print("%s\n", hashCode);
     free(command);
     deleteFile("./", outputName);
     return hashCode;

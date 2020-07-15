@@ -279,6 +279,11 @@ enum Boolean deleteFile(String filePath, String filename) {
     return res ? False : True;
 }
 
+enum Boolean deleteFile2(String fileAddress) {
+    int res = remove(fileAddress);
+    return res ? False : True;
+}
+
 /**
  * split path by / for example path/to/file don't call with . or ./ in the beggining of it
  * @param path
@@ -299,4 +304,13 @@ String * splitPath(String path,int* count){
     }
     *count= folderCount+1;
     return result;
+}
+
+void mkdirs(String path){
+    if (isFolderExist(path) == False) {
+        String command = malloc(sizeof(char) * 100);
+        sprintf(command, "mkdir %s", path);
+        system(command);
+        free(command);
+    }
 }

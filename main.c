@@ -5,11 +5,12 @@
 int main(int argc, String *argv) {
     String *ar = malloc(sizeof(String *) * 10);
     ar[0] = "git";
-    ar[1] = "select";
-    ar[2] = "file.c";
+    ar[1] = "commit";
+    ar[2] = ".\\test\\addedNewFile.txt";
+//    print("%i \n%i\n",isFolderExist("./dbs/selected"), isFolderExist(".\\dbs\\selected"));
 
-//    runCli(3,ar);
-    runCli(argc, argv);
+    runCli(2,ar);
+//    runCli(argc, argv);
 //    trackFilesExample();
     return 0;
 }

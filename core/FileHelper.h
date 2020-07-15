@@ -42,6 +42,8 @@ enum Boolean isFolderExist(String path);
 
 enum Boolean deleteFile(String filePath, String filename);
 
+enum Boolean deleteFile2(String fileAddress);
+
 String getLastModifiedOfFile(String path, String filename);
 
 String getLastModifiedOfFile2(String fileAddress);
@@ -49,3 +51,5 @@ String getLastModifiedOfFile2(String fileAddress);
 String fileAddressMaker(String path, String filename);
 
 String *splitPath(String path, int *count);
+
+void mkdirs(String path);

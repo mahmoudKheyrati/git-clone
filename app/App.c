@@ -163,3 +163,15 @@ trackFiles(String *edited, String *added, String *deleted, int *editSize, int *a
 //    saveEditList(list,"./dbs/lastEditDb", "editDb.txt");
 
 }
+
+short int getChangedFileStatus(String filename){
+    struct LastEditList * editList = malloc(sizeof(struct LastEditList));
+    initLastEditList(editList,20);
+    editList= getLastEditList(DB_LAST_EDIT_PATH,DB_LAST_EDIT_DB_NAME);
+    for (int i = 0; i < editList->length; ++i) {
+        if(strcmp(filename,editList->items[i].fileAddress)==0){
+            return editList->items[i].status;
+        }
+    }
+    return -1;
+}

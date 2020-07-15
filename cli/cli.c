@@ -1,4 +1,5 @@
 #include "cli.h"
+
 #define SELECT_DB_NAME "SELECTED.DB"
 
 void initCli();
@@ -29,18 +30,11 @@ void runCli(int argc, String *argv) {
         statusCli();
 
     } else if (strcmp(mainCommand, "select") == 0) {
-//        String commitId = malloc(COMMIT_ID_SIZE * sizeof(char));
-//        scanf("%s ", commitId);
         selectCli(argv[2]);
     } else if (strcmp(mainCommand, "unselect") == 0) {
-//        String commitId = malloc(COMMIT_ID_SIZE * sizeof(char));
-//        scanf("%s ", commitId);
         unSelectCli(argv[2]);
     } else if (strcmp(mainCommand, "commit") == 0) {
-        String title = malloc(TITLE_SIZE * sizeof(char));
-        String description = malloc(DESCRIPTION_SIZE * sizeof(char));
-        scanf("%s %s", title, description);
-        commitCli(title, description);
+        commitCli(argv[2], argv[3]);
     } else if (strcmp(mainCommand, "log") == 0) {
         logCli();
     } else if (strcmp(mainCommand, "reset") == 0) {
@@ -72,10 +66,10 @@ void statusCli() {
     print("selected files : \n");
     struct SelectedList *selectedList = malloc(sizeof(struct SelectedList));
     initSelectedList(selectedList, 20);
-    selectedList = getSelectedList(".\\dbs\\selected", SELECT_DB_NAME);
+    selectedList = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
     for (int j = 0; j < selectedList->length; ++j) {
-        if(selectedList->items[j].isSelect==True){
-        print("\t\t\t");
+        if (selectedList->items[j].isSelect == True) {
+            print("\t\t\t");
             print("%s\n", selectedList->items[j].fileAddress);
 
         }
@@ -132,11 +126,14 @@ void statusCli() {
 void selectCli(String filename) {
     struct SelectedList *list = malloc(sizeof(struct SelectedList));
     initSelectedList(list, 20);
-    if (isFolderExist("./dbs/selected") == False) {
-        system("mkdir dbs\\selected");
-
+    if (isFolderExist(DB_SELECTED_FILE_PATH) == False) {
+        String command = malloc(sizeof(char) * 100);
+        sprintf(command, "mkdir %s", DB_SELECTED_FILE_PATH);
+        system(command);
+        free(command);
     }
-    list = getSelectedList(".\\dbs\\selected", SELECT_DB_NAME);
+
+    list = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
     int isFind = 0;
     for (int i = 0; i < list->length; ++i) {
         if (strcmp(list->items[i].fileAddress, filename) == 0) {
@@ -152,24 +149,26 @@ void selectCli(String filename) {
         addSelectFileEntry(list, entry);
         print("this file selected .\n");
     }
-    saveSelectList(list,".\\dbs\\selected", SELECT_DB_NAME);
+    saveSelectList(list, DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
 
 }
 
 void unSelectCli(String filename) {
     struct SelectedList *list = malloc(sizeof(struct SelectedList));
     initSelectedList(list, 20);
-    if (isFolderExist("./dbs/selected") == False) {
-        system("mkdir dbs\\selected");
-
+    if (isFolderExist(DB_SELECTED_FILE_PATH) == False) {
+        String command = malloc(sizeof(char) * 100);
+        sprintf(command, "mkdir %s", DB_SELECTED_FILE_PATH);
+        system(command);
+        free(command);
     }
-    list = getSelectedList(".\\dbs\\selected", SELECT_DB_NAME);
+    list = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
     int isFind = 0;
     for (int i = 0; i < list->length; ++i) {
         struct FileSelectEntry current = list->items[i];
         if (strcmp(current.fileAddress, filename) == 0) {
             list->items[i].isSelect = False;
-            saveSelectList(list, ".\\dbs\\selected", SELECT_DB_NAME);
+            saveSelectList(list, DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
             isFind = 1;
             break;
         }
@@ -183,7 +182,56 @@ void unSelectCli(String filename) {
 
 void commitCli(String title, String description) {
     // clean select db
+    struct SelectedList *selectedList = malloc(sizeof(struct SelectedList));
+    initSelectedList(selectedList, 20);
+    selectedList = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
+    struct CommitList *commitList = malloc(sizeof(struct CommitList));
+    initCommitList(commitList, 20);
 
+    struct LogList *logList = malloc(sizeof(struct LogList));
+    initLogList(logList, 20);
+    mkdirs(DB_LOG_PATH);
+    logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
+
+
+    // commit selected files
+    for (int i = 0; i < selectedList->length; ++i) {
+            // select all we needed ( selected files )
+        if (selectedList->items[i].isSelect == True) {
+            struct FileSelectEntry fileSelectEntry = selectedList->items[i];
+            print("%s\n", fileSelectEntry.fileAddress);
+
+            struct CommitFileEntry fileEntry = {.status=getChangedFileStatus(fileSelectEntry.fileAddress)};
+            // write content to get hash code
+            mkdirs(".\\.JIT\\TMP");
+            FILE *file = fopen(".\\.JIT\\TMP\\TMP_TO_HASH.tmp", "w");
+            fprintf(file, "%s%s%li", fileSelectEntry.fileAddress, getDate(), getCurrentTime());
+            fclose(file);
+
+            // hashing the file
+            String hashCode = malloc(sizeof(char) * 100);
+            hashCode = hashFile(".\\.JIT\\TMP", "TMP_TO_HASH.tmp");
+//            print("hash code : %s\n", hashCode);
+            //delete tmp file
+            deleteFile2(".\\.JIT\\TMP\\TMP_TO_HASH.tmp");
+
+            // filling file entry
+            fileEntry.id = hashCode;
+            strcpy(fileEntry.date, getLastModifiedOfFile2(fileSelectEntry.fileAddress));
+            addCommitFileEntry(commitList, fileEntry);
+
+            // create new object for changed file and store it
+
+//            saveCommitList(commitList,OBJECTS_FOLDER_PATH,hashCode);
+//
+//            struct LogEntry logEntry = {.};
+
+
+
+            free(hashCode);
+        }
+        // create commit hash code and push to commits and logs logs
+    }
 }
 
 void logCli() {
