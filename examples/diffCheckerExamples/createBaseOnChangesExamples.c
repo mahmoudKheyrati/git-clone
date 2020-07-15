@@ -1,5 +1,5 @@
 #include "createBaseOnChangesExamples.h"
-
+#include "../../diffChecker/stringDiffSolver.h"
 
 void createSingleFileWithChangesExample(){
     String A = "abcd";

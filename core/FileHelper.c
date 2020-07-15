@@ -195,6 +195,23 @@ String getLastModifiedOfFile(String path, String filename) {
     strftime(time, 50, "%Y-%m-%d %H:%M:%S", localtime(&attrib.st_mtime));
     sprintf(result, "%s", time);
 }
+/**
+ * get last modified of the file
+ * @attention free the result of this function
+ * @param path path/to/file
+ * @param filename
+ * @return last modified time of the file
+ */
+String getLastModifiedOfFile2(String fileAddress) {
+
+
+    String result = malloc(MODIFIED_TIME_LEN * sizeof(char));
+    struct stat attrib;
+    stat(fileAddress, &attrib);
+    char time[50];
+    strftime(time, 50, "%Y-%m-%d %H:%M:%S", localtime(&attrib.st_mtime));
+    sprintf(result, "%s", time);
+}
 
 /**
  *

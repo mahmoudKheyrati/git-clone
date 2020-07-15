@@ -1,6 +1,6 @@
 #include <sys/time.h>
 #include "Core.h"
-
+#define MAX_CONCAT_LEN 1000
 String getDate() {
     String dateString = (char *) malloc(sizeof(char) * 30);
     time_t t = time(NULL);
@@ -13,8 +13,8 @@ String getDate() {
 long int getCurrentTime() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    print("%li\n", tv.tv_sec);
-
+//    print("%li\n", tv.tv_sec);
+    return tv.tv_sec;
 }
 
 String rangeSelect(String string , int start , int end){
@@ -25,5 +25,20 @@ String rangeSelect(String string , int start , int end){
     }
     result[index]='\0';
     return result;
+}
+
+/**
+ * concat list of strings
+ * @param list
+ * @param size
+ * @return concatenation of string list
+ */
+String strConcat(String list[], int size){
+    String result= malloc(sizeof(char)*MAX_CONCAT_LEN);
+    loop(i,size){
+        strcat(result,list[i]);
+    }
+    return result;
+
 }
 

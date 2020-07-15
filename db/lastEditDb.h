@@ -5,10 +5,9 @@
 
 #define MAX_FILE_ENTRY_ITEM_LEN 200
 
-enum FileLastEditStatus{FILE_AVAILABLE, FILE_REMOVED};
+enum FileLastEditStatus{FILE_ADDED,FILE_EDITED, FILE_REMOVED,FILE_NO_CHANGE};
 struct FileEditEntry{
-    char path[MAX_FILE_ENTRY_ITEM_LEN];
-    char filename[MAX_FILE_ENTRY_ITEM_LEN];
+    char fileAddress[MAX_FILE_ENTRY_ITEM_LEN];
     char lastEdit[MAX_FILE_ENTRY_ITEM_LEN];
     short int status;
 };
