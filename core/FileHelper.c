@@ -28,6 +28,32 @@ String readFile(String path, String filename) {
 
 }
 
+String * readLines(String path, String filename, int * n ) {
+    String fileAddress = fileAddressMaker(path, filename);
+
+    FILE *file = fopen(fileAddress, "r");
+    if (!file) {
+        return NULL;
+    }
+    // read file line by line
+    String *result = malloc(sizeof(String *) * MAX_LINES_READ_LINE_SUPPORT);
+    int index = 0 ;
+    while(True){
+        String line = malloc(sizeof(char) * MAX_FILE_ADDRESS_READLINE);
+        if(!line) break;
+        result[index++] = line;
+
+    }
+
+    free(fileAddress);
+    fclose(file);
+    *n = index;
+    return result;
+
+}
+
+
+
 /**
  *
  * @param path path/to/file

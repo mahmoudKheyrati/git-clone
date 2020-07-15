@@ -16,8 +16,13 @@
 #define FILE_FLAG 0
 #define MODIFIED_TIME_LEN 21
 
+#define MAX_LINES_READ_LINE_SUPPORT 1000
+#define MAX_FILE_ADDRESS_READLINE 150
+
 
 String readFile(String path, String filename);
+
+String *readLines(String path, String filename, int *n);
 
 enum Boolean writeFile(String path, String filename, String content);
 

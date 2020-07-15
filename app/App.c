@@ -1,5 +1,31 @@
 #include "App.h"
 
+String *getAllFilesInRoot(int *n) {
+    system("dir /s /b /o:gn /a-d > junki.junki.out.some.tmp");
+    String wholeString = readFile("./", "junki.junki.out.some.tmp");
+    long int len = strlen(wholeString);
+    long int count = 0;
+    for (long int i = 0; i < len; ++i) {
+        if (wholeString[i] == '\n') {
+            count++;
+        }
+    }
+    free(wholeString);
+    FILE * file = fopen("junki.junki.out.some.tmp","r+");
+    String *result = malloc(sizeof(String *) * (count + 1));
+    long int index = 0;
+    for (long int j = 0; j < count + 1; ++j) {
+        String line = malloc(MAX_LINE_SIZE);
+        line[0]='\0';
+        fgets(line,MAX_LINE_SIZE, file);
+        result[index++] = line;
+        line[strlen(line)-1]='\0';
+        print("ll : %s",line);
+    }
+    *n = index;
+    fclose(file);
+    return result;
+}
 
 String *getFilesList(String path, int *size) {
     String *list = malloc(100 * sizeof(String));
@@ -50,8 +76,13 @@ struct LastEditList *getChangedFiles() {
     struct LastEditList *currentEditList = getLastEditList("./dbs/lastEditDb", "editDb.txt");
 
     int filesListSize = 0;
+//    String *filesList = getAllFilesInRoot(&filesListSize);
     String *filesList = getFilesList(".", &filesListSize);
-    
+    for (int k = 0; k < filesListSize; ++k) {
+//        print("%s\n", filesList[k]);
+    }
+
+
     for (int j = 0; j < filesListSize; ++j) {
 //        print("%s\n",filesList[j]);
         int isFind = 0;
