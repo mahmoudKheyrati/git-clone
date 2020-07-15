@@ -1,5 +1,5 @@
 #include "cli.h"
-
+#define SELECT_DB_NAME "SELECTED.DB"
 
 void initCli();
 
@@ -29,13 +29,13 @@ void runCli(int argc, String *argv) {
         statusCli();
 
     } else if (strcmp(mainCommand, "select") == 0) {
-        String commitId = malloc(COMMIT_ID_SIZE * sizeof(char));
-        scanf("%s ", commitId);
-        selectCli(commitId);
+//        String commitId = malloc(COMMIT_ID_SIZE * sizeof(char));
+//        scanf("%s ", commitId);
+        selectCli(argv[2]);
     } else if (strcmp(mainCommand, "unselect") == 0) {
-        String commitId = malloc(COMMIT_ID_SIZE * sizeof(char));
-        scanf("%s ", commitId);
-        unSelectCli(commitId);
+//        String commitId = malloc(COMMIT_ID_SIZE * sizeof(char));
+//        scanf("%s ", commitId);
+        unSelectCli(argv[2]);
     } else if (strcmp(mainCommand, "commit") == 0) {
         String title = malloc(TITLE_SIZE * sizeof(char));
         String description = malloc(DESCRIPTION_SIZE * sizeof(char));
@@ -69,39 +69,51 @@ void statusCli() {
     int eSize = 0;
     int aSize = 0;
     int dSize = 0;
+    print("selected files : \n");
+    struct SelectedList *selectedList = malloc(sizeof(struct SelectedList));
+    initSelectedList(selectedList, 20);
+    selectedList = getSelectedList(".\\dbs\\selected", SELECT_DB_NAME);
+    for (int j = 0; j < selectedList->length; ++j) {
+        if(selectedList->items[j].isSelect==True){
+        print("\t\t\t");
+            print("%s\n", selectedList->items[j].fileAddress);
 
-    struct LastEditList* list = trackFiles(edited,added,deleted,&eSize,&aSize,&dSize);
-    if(eSize==0&&aSize==0&&dSize==0){
+        }
+    }
+    print("\n\n");
+
+    struct LastEditList *list = trackFiles(edited, added, deleted, &eSize, &aSize, &dSize);
+    if (eSize == 0 && aSize == 0 && dSize == 0) {
         print("no changes happen\n");
         return;
     }
-    if(eSize!=0){
+    if (eSize != 0) {
         print("modified files : \n");
 //        printColored("modified files : \n",COLOR_LIGHT_BLUE);
         for (int i = 0; i < eSize; ++i) {
             String string = edited[i];
             print("\t\t\t");
 //            printColored(string,COLOR_LIGHT_BLUE);
-            print("%s",string);
+            print("%s", string);
 
             print("\n\n");
         }
     }
 
-    if(aSize!=0){
+    if (aSize != 0) {
         print("added files : \n");
 //        printColored("added files : \n",0);
         for (int i = 0; i < aSize; ++i) {
             String string = added[i];
             print("\t\t\t");
 //            printColored(string,COLOR_BLOCK_GREEN);
-            print("%s",string);
+            print("%s", string);
             print("\n\n");
         }
     }
 
-     if(dSize!=0){
-         print("deleted files : \n");
+    if (dSize != 0) {
+        print("deleted files : \n");
 //        printColored("deleted files : \n",COLOR_RED);
 //        changeConsoleColor(COLOR_LIGHT_BLUE);
         for (int i = 0; i < dSize; ++i) {
@@ -118,14 +130,59 @@ void statusCli() {
 }
 
 void selectCli(String filename) {
+    struct SelectedList *list = malloc(sizeof(struct SelectedList));
+    initSelectedList(list, 20);
+    if (isFolderExist("./dbs/selected") == False) {
+        system("mkdir dbs\\selected");
+
+    }
+    list = getSelectedList(".\\dbs\\selected", SELECT_DB_NAME);
+    int isFind = 0;
+    for (int i = 0; i < list->length; ++i) {
+        if (strcmp(list->items[i].fileAddress, filename) == 0) {
+            isFind = 1;
+            break;
+        }
+    }
+    if (isFind == True) {
+        print("this file is already selected.\n");
+    } else {
+        struct FileSelectEntry entry = {.isSelect=True};
+        strcpy(entry.fileAddress, filename);
+        addSelectFileEntry(list, entry);
+        print("this file selected .\n");
+    }
+    saveSelectList(list,".\\dbs\\selected", SELECT_DB_NAME);
 
 }
 
 void unSelectCli(String filename) {
+    struct SelectedList *list = malloc(sizeof(struct SelectedList));
+    initSelectedList(list, 20);
+    if (isFolderExist("./dbs/selected") == False) {
+        system("mkdir dbs\\selected");
 
+    }
+    list = getSelectedList(".\\dbs\\selected", SELECT_DB_NAME);
+    int isFind = 0;
+    for (int i = 0; i < list->length; ++i) {
+        struct FileSelectEntry current = list->items[i];
+        if (strcmp(current.fileAddress, filename) == 0) {
+            list->items[i].isSelect = False;
+            saveSelectList(list, ".\\dbs\\selected", SELECT_DB_NAME);
+            isFind = 1;
+            break;
+        }
+    }
+    if (isFind == True) {
+        print("this file unselected.\n");
+    } else {
+        print("there isn't such file to unselect .\n");
+    }
 }
 
 void commitCli(String title, String description) {
+    // clean select db
 
 }
 

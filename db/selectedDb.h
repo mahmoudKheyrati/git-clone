@@ -15,12 +15,12 @@ struct SelectedList{
     struct FileSelectEntry* items;
 };
 
-void addLastEditEntry(struct LastEditList *list, struct FileEditEntry item);
+void addSelectFileEntry(struct SelectedList *list, struct FileSelectEntry item);
 
-void expandLastEditList(struct LastEditList *list);
-void initLastEditList(struct LastEditList *list, int initSize) ;
+void expandSelectedList(struct SelectedList *list);
+void initSelectedList(struct SelectedList *list, int initSize) ;
 
-void saveEditList(struct LastEditList* list, String path, String filename);
-struct LastEditList* getLastEditList(String path, String filename);
+void saveSelectList(struct SelectedList* list, String path, String filename);
+struct SelectedList* getSelectedList(String path, String filename);
 
 

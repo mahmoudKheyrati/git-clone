@@ -17,7 +17,7 @@ void expandSelectedList(struct SelectedList *list) {
     list->items = items;
 }
 
-void addFileSelectEntry(struct SelectedList *list, struct FileSelectEntry item) {
+void addSelectFileEntry(struct SelectedList *list, struct FileSelectEntry item) {
     if (list->length == list->size) {
         expandSelectedList(list);
     }
