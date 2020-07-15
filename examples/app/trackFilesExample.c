@@ -10,9 +10,10 @@ void trackFilesExample(){
     int dSize = 0;
 
     struct LastEditList* list = trackFiles(edited,added,deleted,&eSize,&aSize,&dSize);
-    for (int i = 0; i < eSize; ++i) {
-        print("eee : %s\n", edited[i]);
+    for (int i = 0; i < dSize; ++i) {
+        print("eee : %s\n", deleted[i]);
     }
+
 //    saveEditList(list,"./dbs/lastEditDb", "editDb.txt");
 
 }

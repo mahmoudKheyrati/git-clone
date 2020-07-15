@@ -21,7 +21,7 @@ void help();
 
 void runCli(int argc, String *argv) {
     String mainCommand = argv[1];
-    print("%s", mainCommand);
+    print("%s\n", mainCommand);
     if (strcmp(mainCommand, "init") == 0) {
         initCli();
 
@@ -63,6 +63,57 @@ void initCli() {
 }
 
 void statusCli() {
+    String *edited = malloc(100 * sizeof(String *));
+    String *added = malloc(100 * sizeof(String *));
+    String *deleted = malloc(100 * sizeof(String *));
+    int eSize = 0;
+    int aSize = 0;
+    int dSize = 0;
+
+    struct LastEditList* list = trackFiles(edited,added,deleted,&eSize,&aSize,&dSize);
+    if(eSize==0&&aSize==0&&dSize==0){
+        print("no changes happen\n");
+        return;
+    }
+    if(eSize!=0){
+        print("modified files : \n");
+//        printColored("modified files : \n",COLOR_LIGHT_BLUE);
+        for (int i = 0; i < eSize; ++i) {
+            String string = edited[i];
+            print("\t\t\t");
+//            printColored(string,COLOR_LIGHT_BLUE);
+            print("%s",string);
+
+            print("\n\n");
+        }
+    }
+
+    if(aSize!=0){
+        print("added files : \n");
+//        printColored("added files : \n",0);
+        for (int i = 0; i < aSize; ++i) {
+            String string = added[i];
+            print("\t\t\t");
+//            printColored(string,COLOR_BLOCK_GREEN);
+            print("%s",string);
+            print("\n\n");
+        }
+    }
+
+     if(dSize!=0){
+         print("deleted files : \n");
+//        printColored("deleted files : \n",COLOR_RED);
+//        changeConsoleColor(COLOR_LIGHT_BLUE);
+        for (int i = 0; i < dSize; ++i) {
+            String string = deleted[i];
+            print("\t\t\t");
+//            changeConsoleColor(COLOR_BLOCK_GREEN);
+            puts(string);
+//            printColored(string,COLOR_RED);
+            print("\n\n");
+        }
+    }
+//        saveEditList(list,"./dbs/lastEditDb", "editDb.txt");
 
 }
 

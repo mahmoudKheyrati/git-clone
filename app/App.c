@@ -137,18 +137,18 @@ trackFiles(String *edited, String *added, String *deleted, int *editSize, int *a
         struct FileEditEntry entry = list->items[j];
         switch (entry.status) {
             case FILE_EDITED:
-                print("edited : %s\n", entry.fileAddress);
+//                print("edited : %s\n", entry.fileAddress);
                 edited[eSize++] = entry.fileAddress;
                 break;
             case FILE_ADDED:
-                print("added : %s\n", entry.fileAddress);
-                added[aSize] = entry.fileAddress;
+//                print("added : %s\n", entry.fileAddress);
+                added[aSize++] = entry.fileAddress;
                 break;
             case FILE_NO_CHANGE:
-                print("no change : %s\n", entry.fileAddress);
+//                print("no change : %s\n", entry.fileAddress);
                 break;
             case FILE_REMOVED:
-                print("removed : %s\n", entry.fileAddress);
+//                print("removed : %s\n", entry.fileAddress);
                 deleted[dSize++] = entry.fileAddress;
                 break;
         }
