@@ -20,26 +20,28 @@ int ** createLookupTable(String firstString , String secondString){
     }
     for (int i = 1; i < lenSecond; ++i) {
         for (int j = 1; j < lenFirst; ++j) {
-            print("(%i , %i):%i    ",i,j,list[i][j]);
+//            print("(%i , %i):%i    ",i,j,list[i][j]);
             if(firstString[j-1]==secondString[i-1]){
                 list[i][j]=list[i-1][j-1]+1;
             }else{
                 list[i][j]= max(list[i-1][j],list[i][j-1]);
             }
         }
-        print("\n");
+//        print("\n");
     }
 
     for (int k = 0; k < lenSecond; ++k) {
         for (int i = 0; i < lenFirst; ++i) {
-            print("%i ",list[k][i]);
+//            print("%i ",list[k][i]);
         }
-        print("\n");
+//        print("\n");
     }
 
     return list;
 }
 struct DifferenceList* parsLookUpTable(int ** list , String firstString, String secondString, long int m , long  int n){
+    long int _m=m;
+    long int _n=n;
     struct EqualPoint *reversedPoints = malloc(sizeof(struct EqualPoint) * MAX_SEQUENCE_SUPPORT);
     struct EqualPoint *points = malloc(sizeof(struct EqualPoint) * MAX_SEQUENCE_SUPPORT);
     struct EqualPoint *mainPoints = malloc(sizeof(struct EqualPoint) * MAX_SEQUENCE_SUPPORT);
@@ -80,13 +82,13 @@ struct DifferenceList* parsLookUpTable(int ** list , String firstString, String 
     }
 
     // reverse the list
-    print("new alog:\n");
+//    print("new alog:\n");
     for (int i = 0; i <sequencesCount ; ++i) {
 
         points[i]= reversedPoints[sequencesCount-i-1];
-        print("(%li, %li) -> (%li, %li)\n",points[i].startX,points[i].startY,points[i].endX,points[i].endY);
+//        print("(%li, %li) -> (%li, %li)\n",points[i].startX,points[i].startY,points[i].endX,points[i].endY);
     }
-    print("------------\n");
+//    print("------------\n");
 
 
     for (int k = 0; k < sequencesCount; ++k) {
@@ -112,6 +114,6 @@ struct DifferenceList* parsLookUpTable(int ** list , String firstString, String 
     }
 
 
-    return parser( mainPoints, mainPointsSize, firstString, secondString, m, n);
+    return parser( mainPoints, mainPointsSize, firstString, secondString, _m, _n);
 
 }

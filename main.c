@@ -2,7 +2,7 @@
 #include "diffChecker/stringDiffSolver.h"
 #include "examples/diffCheckerExamples/createBaseOnChangesExamples.h"
 int main(int argc, String *argv) {
-    createSingleFileWithChangesExample();
+//    createSingleFileWithChangesExample();
 //    runCli(argc,argv);
     String A = "abcd";
     String B = "ab";
@@ -13,11 +13,12 @@ int main(int argc, String *argv) {
     A= readFile("./test","old.txt");
     B=readFile("./test","new.txt");
 
-
     long int lenA = strlen(A);
     long int lenB = strlen(B);
+
+
     int** lookupTable = createLookupTable(A,B);
-    struct DifferenceList* differenceList = parsLookUpTable(lookupTable,A+1,B+1,lenA,lenB);
+    struct DifferenceList* differenceList = parsLookUpTable(lookupTable,A,B,lenA,lenB);
 
     struct DifferenceList *list = differenceList;
     struct DifferenceList *list2 = StringDiffChecker(A, B);

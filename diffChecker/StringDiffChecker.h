@@ -45,5 +45,5 @@ void add(struct DifferenceList *list, struct DifferenceSequence sequence);
 struct DifferenceList *StringDiffChecker(String stringA, String stringB);
 
 struct DifferenceList *
-parser(struct EqualPoint *points, int size, String oldString, String newString, int maxX, int maxY);
+parser(struct EqualPoint *points, int size, String oldString, String newString, long int maxX, long int maxY);
 
