@@ -7,6 +7,7 @@
 #include "commitDb.h"
 #include "lastEditDb.h"
 #include "logDb.h"
+#include "selectedDb.h"
 
 #define ROOT_FOLDER_NAME "./.JIT"
 
@@ -18,6 +19,9 @@
 
 #define DB_LAST_EDIT_PATH DB_ROOT"/LAST_EDIT"
 #define DB_LAST_EDIT_DB_NAME "LAST_EDIT.db"
+
+#define DB_SELECTED_FILE_PATH DB_ROOT"/SELECTED"
+#define DB_SELECTED_FILENAME "SELECTED.db"
 
 #define OBJECTS_FOLDER_PATH ROOT_FOLDER_NAME"/OBJECTS"
 
