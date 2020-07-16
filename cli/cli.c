@@ -39,13 +39,9 @@ void runCli(int argc, String *argv) {
     } else if (strcmp(mainCommand, "log") == 0) {
         logCli();
     } else if (strcmp(mainCommand, "reset") == 0) {
-        String commitId = malloc(COMMIT_ID_SIZE * sizeof(char));
-        scanf("%s ", commitId);
-        resetCli(commitId);
+        resetCli(argv[2]);
     } else if (strcmp(mainCommand, "stash") == 0) {
-        String commitId = malloc(COMMIT_ID_SIZE * sizeof(char));
-        scanf("%s ", commitId);
-        stashCli(commitId);
+        stashCli(argv[2]);
     } else {
         // anything else , use need help
         help();
@@ -156,12 +152,12 @@ void selectCli(String filename) {
         }
     }
     if (isFind == True) {
-        print("this file is already selected.\n");
+        print("this file is already selected\n");
     } else {
         struct FileSelectEntry entry = {.isSelect=True};
         strcpy(entry.fileAddress, filename);
         addSelectFileEntry(list, entry);
-        print("this file selected .\n");
+        print("selected :\t\t%s\n",entry.fileAddress);
     }
     saveSelectList(list, DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
 
@@ -178,19 +174,21 @@ void unSelectCli(String filename) {
     }
     list = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
     int isFind = 0;
+    int index = 0 ;
     for (int i = 0; i < list->length; ++i) {
         struct FileSelectEntry current = list->items[i];
         if (strcmp(current.fileAddress, filename) == 0) {
             list->items[i].isSelect = False;
             saveSelectList(list, DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
             isFind = 1;
+            index = i;
             break;
         }
     }
     if (isFind == True) {
-        print("this file unselected.\n");
+        print("unselected :\t\t%s\n",list->items[index].fileAddress);
     } else {
-        print("there isn't such file to unselect .\n");
+        print("there isn't such file to unselect\n");
     }
 }
 
@@ -347,7 +345,64 @@ void logCli() {
 }
 
 void resetCli(String commitId) {
+    struct LogList *logList = malloc(sizeof(struct LogList));
+    initLogList(logList, 20);
+    logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
+    int isFind = 0;
+    int index = 0;
+    for (int i = 0; i < logList->length; ++i) {
+        struct LogEntry entry = logList->items[i];
+        if (strcmp(entry.id, commitId) == 0) {
+//            print("find commit id\n");
+            isFind = 1;
+            index = i;
+        }
 
+    }
+    if (isFind == False) {
+        printColored("there isn't such commit id please enter the correct one!\n", COLOR_RED);
+        return;
+    }
+    // copy first to prev
+    deepCopy(FIRST_STATE_PATH,PREV_STATE_PATH,ROOT_FOLDER_NAME);
+    for (int i = 0; i < index+1; ++i) {
+        struct LogEntry entry = logList->items[i];
+        struct CommitList *commitList = malloc(sizeof(struct CommitList));
+        initCommitList(commitList, 20);
+        commitList = getCommitList(DB_COMMITS_PATH, entry.id);
+        for (int j = 0; j < commitList->length; ++j) {
+            struct CommitFileEntry commitFileEntry = commitList->items[j];
+            print("%s %s %s %i\n", commitFileEntry.id, commitFileEntry.fileAddress, commitFileEntry.date,
+                  commitFileEntry.status);
+            if (commitFileEntry.status == ADD_NEW_FILE || commitFileEntry.status == CHANGED_FILE) {
+                String prevStateAddress = malloc(sizeof(char) * 200);
+
+                sprintf(prevStateAddress, "%s\\%s", PREV_STATE_PATH, commitFileEntry.fileAddress);
+
+                if(commitFileEntry.status==FILE_EDITED){
+                    String A = readFile2(prevStateAddress);
+                    struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, entry.id);
+                    nextSequenceGenerator(A, changeList, extractFilePathWithFileAddress(commitFileEntry.fileAddress),
+                                          extractFileNameWithFileAddress(commitFileEntry.fileAddress));
+                }else{
+                    String A = malloc(1* sizeof(char));
+                    A[0]='\0';
+
+                    struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, entry.id);
+                    nextSequenceGenerator(A, changeList, extractFilePathWithFileAddress(commitFileEntry.fileAddress),
+                                          extractFileNameWithFileAddress(commitFileEntry.fileAddress));
+
+                }
+
+            } else if (commitFileEntry.status == REMOVED_FILE) {
+                //remove file
+                deleteFile2(commitFileEntry.fileAddress);
+            }
+
+            deepCopy(".",PREV_STATE_PATH,ROOT_FOLDER_NAME);
+
+        }
+    }
 }
 
 void stashCli(String commitId) {
