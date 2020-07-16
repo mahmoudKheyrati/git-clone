@@ -18,6 +18,8 @@ void resetCli(String commitId);
 
 void stashCli(String commitId);
 
+void stashPopCli();
+
 void help();
 
 void runCli(int argc, String *argv) {
@@ -41,7 +43,11 @@ void runCli(int argc, String *argv) {
     } else if (strcmp(mainCommand, "reset") == 0) {
         resetCli(argv[2]);
     } else if (strcmp(mainCommand, "stash") == 0) {
-        stashCli(argv[2]);
+        if (strcmp(argv[2], "pop") == 0) {
+            stashPopCli();
+        } else {
+            stashCli(argv[2]);
+        }
     } else {
         // anything else , use need help
         help();
@@ -157,7 +163,7 @@ void selectCli(String filename) {
         struct FileSelectEntry entry = {.isSelect=True};
         strcpy(entry.fileAddress, filename);
         addSelectFileEntry(list, entry);
-        print("selected :\t\t%s\n",entry.fileAddress);
+        print("selected :\t\t%s\n", entry.fileAddress);
     }
     saveSelectList(list, DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
 
@@ -174,7 +180,7 @@ void unSelectCli(String filename) {
     }
     list = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
     int isFind = 0;
-    int index = 0 ;
+    int index = 0;
     for (int i = 0; i < list->length; ++i) {
         struct FileSelectEntry current = list->items[i];
         if (strcmp(current.fileAddress, filename) == 0) {
@@ -186,7 +192,7 @@ void unSelectCli(String filename) {
         }
     }
     if (isFind == True) {
-        print("unselected :\t\t%s\n",list->items[index].fileAddress);
+        print("unselected :\t\t%s\n", list->items[index].fileAddress);
     } else {
         print("there isn't such file to unselect\n");
     }
@@ -197,8 +203,8 @@ void commitCli(String title, String description) {
     initSelectedList(selectedList, 20);
     selectedList = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
 
-    if(selectedList->length==0){
-        printColored("there is nothing to commit please select file(s) first \n",COLOR_RED);
+    if (selectedList->length == 0) {
+        printColored("there is nothing to commit please select file(s) first \n", COLOR_RED);
         return;
     }
 
@@ -211,7 +217,7 @@ void commitCli(String title, String description) {
     logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
 
     struct LastEditList *editList = malloc(sizeof(struct LastEditList));
-    initLastEditList(editList,20);
+    initLastEditList(editList, 20);
     editList = getLastEditList(DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
 
     // commit selected files
@@ -236,7 +242,7 @@ void commitCli(String title, String description) {
         String hashCode = malloc(sizeof(char) * 100);
         hashCode = hashFile2("hash.hash");
 
-        hashCode[strlen(hashCode)-1]='\0';
+        hashCode[strlen(hashCode) - 1] = '\0';
         //delete tmp file
         deleteFile2("hash.hash");
 
@@ -272,8 +278,8 @@ void commitCli(String title, String description) {
             }
         }
 
-        strcpy(fileEntry.id,objectFilename);
-        strcpy(fileEntry.fileAddress , fileSelectEntry.fileAddress);
+        strcpy(fileEntry.id, objectFilename);
+        strcpy(fileEntry.fileAddress, fileSelectEntry.fileAddress);
 
 //        fileEntry.id = objectFilename;
 //        fileEntry.fileAddress = fileSelectEntry.fileAddress;
@@ -289,7 +295,7 @@ void commitCli(String title, String description) {
     fclose(allHashes);
     // create commit hashCode
     String commitHashCode = hashFile2(ALL_HASHES_FILE_ADDRESS);
-    commitHashCode[strlen(commitHashCode)-1]='\0';
+    commitHashCode[strlen(commitHashCode) - 1] = '\0';
     String commitFilename = malloc(70 * sizeof(char));
     sprintf(commitFilename, "%s.CMT", commitHashCode);
     //saving commit
@@ -333,12 +339,12 @@ void commitCli(String title, String description) {
 }
 
 void logCli() {
-    struct LogList * logList = malloc(sizeof(struct LogList));
+    struct LogList *logList = malloc(sizeof(struct LogList));
     initLogList(logList, 20);
     logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
     for (int i = 0; i < logList->length; ++i) {
         struct LogEntry entry = logList->items[i];
-        print("%s %s %s %s \n",entry.id, entry.title, entry.description,entry.date);
+        print("%s %s %s %s \n", entry.id, entry.title, entry.description, entry.date);
     }
 
 
@@ -364,8 +370,8 @@ void resetCli(String commitId) {
         return;
     }
     // copy first to prev
-    deepCopy(FIRST_STATE_PATH,PREV_STATE_PATH,ROOT_FOLDER_NAME);
-    for (int i = 0; i < index+1; ++i) {
+    deepCopy(FIRST_STATE_PATH, PREV_STATE_PATH, ROOT_FOLDER_NAME);
+    for (int i = 0; i < index + 1; ++i) {
         struct LogEntry entry = logList->items[i];
         struct CommitList *commitList = malloc(sizeof(struct CommitList));
         initCommitList(commitList, 20);
@@ -379,14 +385,14 @@ void resetCli(String commitId) {
 
                 sprintf(prevStateAddress, "%s\\%s", PREV_STATE_PATH, commitFileEntry.fileAddress);
 
-                if(commitFileEntry.status==FILE_EDITED){
+                if (commitFileEntry.status == FILE_EDITED) {
                     String A = readFile2(prevStateAddress);
                     struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, entry.id);
                     nextSequenceGenerator(A, changeList, extractFilePathWithFileAddress(commitFileEntry.fileAddress),
                                           extractFileNameWithFileAddress(commitFileEntry.fileAddress));
-                }else{
-                    String A = malloc(1* sizeof(char));
-                    A[0]='\0';
+                } else {
+                    String A = malloc(1 * sizeof(char));
+                    A[0] = '\0';
 
                     struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, entry.id);
                     nextSequenceGenerator(A, changeList, extractFilePathWithFileAddress(commitFileEntry.fileAddress),
@@ -399,13 +405,33 @@ void resetCli(String commitId) {
                 deleteFile2(commitFileEntry.fileAddress);
             }
 
-            deepCopy(".",PREV_STATE_PATH,ROOT_FOLDER_NAME);
+            deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
 
         }
     }
 }
 
 void stashCli(String commitId) {
+    deepCopy(".", ".\\.JIT\\STASH", ROOT_FOLDER_NAME);
+    writeFile(".\\.JIT\\","IN_STASH.TMP","1");
+    // reset
+//    resetCli(commitId);
+
+}
+
+void stashPopCli() {
+    String result = readFile(".\\.JIT\\","IN_STASH.TMP");
+    print("%s",result);
+
+    if (strcmp(result,"1")==0) {
+
+        deepCopy(".\\.JIT\\STASH", ".", ROOT_FOLDER_NAME);
+        writeFile(".\\.JIT\\","IN_STASH.TMP","0");
+        system("cd .\\.JIT\\STASH &&  DEL /F/Q/S *.* > NUL");
+
+    } else {
+        printColored("you are not in stash mode!\n", COLOR_RED);
+    }
 
 }
 
