@@ -14,13 +14,13 @@ String *getAllFilesInRoot(int *n) {
     FILE * file = fopen("junki.junki.out.some.tmp","r+");
     String *result = malloc(sizeof(String *) * (count + 1));
     long int index = 0;
-    for (long int j = 0; j < count + 1; ++j) {
+    for (long int j = 0; j < count ; ++j) {
         String line = malloc(MAX_LINE_SIZE);
         line[0]='\0';
         fgets(line,MAX_LINE_SIZE, file);
         result[index++] = line;
         line[strlen(line)-1]='\0';
-        print("ll : %s",line);
+        print("%li ) %s\n",j, result[index-1]);
     }
     *n = index;
     fclose(file);
@@ -76,15 +76,16 @@ struct LastEditList *getChangedFiles() {
     struct LastEditList *currentEditList = getLastEditList("./dbs/lastEditDb", "editDb.txt");
 
     int filesListSize = 0;
-//    String *filesList = getAllFilesInRoot(&filesListSize);
-    String *filesList = getFilesList(".", &filesListSize);
+    String *filesList = getAllFilesInRoot(&filesListSize);
+//    String *filesList = getFilesList(".", &filesListSize);
     for (int k = 0; k < filesListSize; ++k) {
 //        print("%s\n", filesList[k]);
     }
+//    return NULL;
 
 
     for (int j = 0; j < filesListSize; ++j) {
-//        print("%s\n",filesList[j]);
+        print("we %s\n",filesList[j]);
         int isFind = 0;
         int index = 0;
         for (int i = 0; i < currentEditList->length; ++i) {

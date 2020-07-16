@@ -3,6 +3,15 @@
 #include "examples/app/trackFilesExample.h"
 
 int main(int argc, String *argv) {
+
+    getChangedFiles();
+    ////////////////////////////////////////
+//    int size = 0 ;
+//    String * files = getAllFilesInRoot(&size);
+//    for (long int i = 0; i < size; ++i) {
+//        print("%li - %s\n",i, files[i]);
+//    }
+    return 0;
     String *ar = malloc(sizeof(String *) * 10);
     ar[0] = "git";
     ar[1] = "init";

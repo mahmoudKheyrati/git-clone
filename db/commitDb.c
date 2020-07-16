@@ -15,6 +15,7 @@ void expandCommitList(struct CommitList *list) {
     }
     free(list->items);
     list->items = items;
+    list->size*=2;
 }
 
 void addCommitFileEntry(struct CommitList *list, struct CommitFileEntry item) {

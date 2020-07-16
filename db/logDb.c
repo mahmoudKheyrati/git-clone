@@ -15,6 +15,7 @@ void expandLogList(struct LogList *list) {
     }
     free(list->items);
     list->items = items;
+    list->size*=2;
 }
 
 void addLogEntry(struct LogList *list, struct LogEntry item) {

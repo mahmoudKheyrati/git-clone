@@ -14,6 +14,7 @@ void expandLastEditList(struct LastEditList *list) {
     }
     free(list->items);
     list->items = items;
+    list->size*=2;
 }
 
 void addLastEditEntry(struct LastEditList *list, struct FileEditEntry item) {
