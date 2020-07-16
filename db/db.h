@@ -28,6 +28,11 @@
 #define DEFAULT_CONFIG_PATH ROOT_FOLDER_NAME
 #define DEFAULT_CONFIG_FILENAME "CONFIG"
 
+#define PREV_STATE_PATH ROOT_FOLDER_NAME"\\PREV_STATE"
+
+
+
+
 
 struct ConfigDbAddress {
     String path;

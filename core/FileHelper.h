@@ -8,6 +8,7 @@
 #include "stdio.h"
 #include "string.h"
 #include <sys/time.h>
+#include "../app/App.h"
 
 #define MAX_LINE_SIZE 1000
 #define MAX_RESULT_SIZE MAX_LINE_SIZE*999
@@ -19,6 +20,7 @@
 #define MAX_LINES_READ_LINE_SUPPORT 1000
 #define MAX_FILE_ADDRESS_READLINE 150
 
+#define TMP_RESULT_ADDRESS ROOT_FOLDER_NAME"\\COPY_TMP.TMP"
 
 String readFile(String path, String filename);
 
@@ -53,3 +55,12 @@ String fileAddressMaker(String path, String filename);
 String *splitPath(String path, int *count);
 
 void mkdirs(String path);
+
+String extractFileNameWithFileAddress(String fileAddress);
+
+String extractFilePathWithFileAddress(String fileAddress);
+
+void deepCopy(String source, String destination);
+
+void fileCopy(String source, String destination, String filename);
+

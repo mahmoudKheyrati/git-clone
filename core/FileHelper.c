@@ -314,3 +314,52 @@ void mkdirs(String path){
         free(command);
     }
 }
+
+String extractFileNameWithFileAddress(String fileAddress){
+    int len = strlen(fileAddress);
+    int index = 0;
+    for (int i = len - 1; i >= 0; --i) {
+        if (fileAddress[i] == '\\' || fileAddress[i] == '/') {
+            index = i;
+            break;
+        }
+    }
+    return fileAddress+index+1;
+}
+
+String extractFilePathWithFileAddress(String fileAddress){
+    int len = strlen(fileAddress);
+
+    int index = 0;
+    for (int i = len - 1; i >= 0; --i) {
+        if (fileAddress[i] == '\\' || fileAddress[i] == '/') {
+            index = i;
+            break;
+        }
+    }
+    String path = malloc(sizeof(char)* len);
+    strcpy(path , fileAddress);
+    path[index+1]='\0';
+    return path;
+}
+
+/*
+ * only works in windows powerd by robocopy package
+ */
+void deepCopy(String source , String destination){
+    String command = malloc(sizeof(char)*300);
+    sprintf(command, "robocopy %s %s /E > %s ", source,destination,TMP_RESULT_ADDRESS);
+    system(command);
+    free(command);
+    deleteFile2(TMP_RESULT_ADDRESS);
+}
+/*
+ * only works in windows powerd by robocopy package
+ */
+void fileCopy(String source , String destination, String filename){
+    String command = malloc(sizeof(char)*300);
+    sprintf(command, "robocopy %s %s %s > %s", source,destination,filename,TMP_RESULT_ADDRESS);
+    system(command);
+    free(command);
+    deleteFile2(TMP_RESULT_ADDRESS);
+}
