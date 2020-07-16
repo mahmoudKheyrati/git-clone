@@ -14,7 +14,9 @@ int main(int argc, String *argv) {
 //    return 0;
     String *ar = malloc(sizeof(String *) * 10);
     ar[0] = "git";
-    ar[1] = "log";
+    ar[1] = "commit";
+    ar[2] = "title";
+    ar[3] = "desription";
 //    ar[2] = ".\\test\\addedNewFile.txt";
 //    print("%i \n%i\n",isFolderExist("./dbs/selected"), isFolderExist(".\\dbs\\selected"));
 //    String source = ".";
@@ -23,8 +25,9 @@ int main(int argc, String *argv) {
 ////    deepCopy(".","hffghf");
 //    fileCopy(".\\test", ".\\path", "old.txt");
 //    chooseColor();
-    runCli(1,ar);
-//    runCli(argc, argv);
+//    print("%s\n",SINGLE_HASH_FILE_ADDRESS);
+//    runCli(4,ar);
+    runCli(argc, argv);
 //    trackFilesExample();
     return 0;
 }

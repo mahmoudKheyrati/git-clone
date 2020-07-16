@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../app/App.h"
+#include "../diffChecker/stringDiffSolver.h"
 #include <windows.h>
 #include <dirent.h>
 

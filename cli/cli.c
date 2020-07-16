@@ -77,9 +77,22 @@ void initCli() {
         free(command);
 
         // select all files
-
-
-        commitCli("init jit", "initialize first commit");
+//        struct LastEditList *list = getChangedFiles();
+//        struct SelectedList * selectedList = malloc(sizeof(struct SelectedList));
+//        initSelectedList(selectedList,20);
+//        selectedList = getSelectedList(DB_SELECTED_FILE_PATH, DB_SELECTED_FILENAME);
+//        printColored("\n\n\tmodified files : \n", COLOR_LIGHT_BLUE);
+//        for (int i = 0; i < list->length; ++i) {
+//                list->items[i].status= FILE_ADDED;
+//            struct FileSelectEntry entry = {.isSelect=True};
+//            strcpy(entry.fileAddress, list->items[i].fileAddress);
+//            addSelectFileEntry(selectedList, entry);
+//        }
+//        saveEditList(list,DB_LAST_EDIT_PATH,DB_LAST_EDIT_DB_NAME);
+//        saveSelectList(selectedList,DB_SELECTED_FILE_PATH,DB_SELECTED_FILENAME);
+//
+//
+//        commitCli("init jit", "initialize first commit");
     }
 
 
@@ -194,6 +207,7 @@ void commitCli(String title, String description) {
     logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
 
     struct LastEditList *editList = malloc(sizeof(struct LastEditList));
+    initLastEditList(editList,20);
     editList = getLastEditList(DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
 
     // commit selected files
@@ -206,25 +220,26 @@ void commitCli(String title, String description) {
         if (selectedList->items[i].isSelect == False) continue;
 
         struct FileSelectEntry fileSelectEntry = selectedList->items[i];
-        print("%s\n", fileSelectEntry.fileAddress);
+//        print("%s\n", fileSelectEntry.fileAddress);
 
         struct CommitFileEntry fileEntry = {.status=getChangedFileStatus(fileSelectEntry.fileAddress)};
         // write content to get hash code
         mkdirs(SINGLE_HASH_FILE_PATH);
-        FILE *file = fopen(SINGLE_HASH_FILE_ADDRESS, "w");
+        FILE *file = fopen("hash.hash", "w");
         fprintf(file, "%s%s%li", fileSelectEntry.fileAddress, getDate(), getCurrentTime());
         fclose(file);
-
         // hashing the file
         String hashCode = malloc(sizeof(char) * 100);
-        hashCode = hashFile2(SINGLE_HASH_FILE_ADDRESS);
-//            print("hash code : %s\n", hashCode);
+        print("%s\n","hash.hash");
+        hashCode = hashFile2("hash.hash");
+
+        hashCode[strlen(hashCode)-1]='\0';
         //delete tmp file
-        deleteFile2(SINGLE_HASH_FILE_ADDRESS);
+        deleteFile2("hash.hash");
 
 
         // create new object for changed file and store it
-        String prevPath = malloc(2000 * sizeof(char));
+        String prevPath = malloc(1000 * sizeof(char));
         sprintf(prevPath, "%s\\%s", PREV_STATE_PATH, fileSelectEntry.fileAddress);
 
         // determine changes
@@ -268,6 +283,7 @@ void commitCli(String title, String description) {
     fclose(allHashes);
     // create commit hashCode
     String commitHashCode = hashFile2(ALL_HASHES_FILE_ADDRESS);
+    commitHashCode[strlen(commitHashCode)-1]='\0';
     String commitFilename = malloc(70 * sizeof(char));
     sprintf(commitFilename, "%s.CMT", commitHashCode);
     //saving commit
@@ -307,6 +323,14 @@ void commitCli(String title, String description) {
 }
 
 void logCli() {
+    struct LogList * logList = malloc(sizeof(struct LogList));
+    initLogList(logList, 20);
+    logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
+    for (int i = 0; i < logList->length; ++i) {
+        struct LogEntry entry = logList->items[i];
+        print("%s %s %s %s \n",entry.id, entry.title, entry.description,entry.date);
+    }
+
 
 }
 

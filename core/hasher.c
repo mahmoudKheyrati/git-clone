@@ -44,7 +44,7 @@ String hashFile2(String fileAddress){
     String hashCode = malloc(sizeof(char)*50);
     hashCode= readFile("./", outputName);
 //    print("%s\n", hashCode);
-    free(command);
+//    free(command);
     deleteFile("./", outputName);
     return hashCode;
 }
