@@ -54,3 +54,7 @@ struct SelectedList* getSelectedList(String path, String filename){
     return list;
 }
 
+void clearSelectedDb(){
+    deleteFile(DB_SELECTED_FILE_PATH,DB_SELECTED_FILENAME);
+}
+

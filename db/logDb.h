@@ -5,8 +5,8 @@
 struct LogEntry{
     char id[40];
     char title[100];
-    char description[200];
-    char date[30];
+    char description[100];
+    char date[40];
 };
 
 struct LogList{

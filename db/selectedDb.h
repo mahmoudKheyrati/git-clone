@@ -23,4 +23,6 @@ void initSelectedList(struct SelectedList *list, int initSize) ;
 void saveSelectList(struct SelectedList* list, String path, String filename);
 struct SelectedList* getSelectedList(String path, String filename);
 
+void clearSelectedDb();
+
 

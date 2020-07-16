@@ -198,6 +198,12 @@ void commitCli(String title, String description) {
     struct SelectedList *selectedList = malloc(sizeof(struct SelectedList));
     initSelectedList(selectedList, 20);
     selectedList = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
+
+    if(selectedList->length==0){
+        printColored("there is nothing to commit please select file(s) first \n",COLOR_RED);
+        return;
+    }
+
     struct CommitList *commitList = malloc(sizeof(struct CommitList));
     initCommitList(commitList, 20);
 
@@ -323,7 +329,7 @@ void commitCli(String title, String description) {
     }
     free(fileAddressInPrevState);
     // empty selected list
-    clearLastEditDb();
+    clearSelectedDb();
     // save edit list
     saveEditList(editList, DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
 }
