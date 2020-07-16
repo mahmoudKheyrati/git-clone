@@ -46,7 +46,7 @@ struct LogList* getLogList(String path, String filename){
 
 //    struct LogEntry entry;
 //    fread(&entry,1, sizeof(struct LogEntry), file);
-//    print("single item %s\n", entry.filename);
+//    print("single item %s\n", entry.fileAddress);
 
     fread(list->items,list->length, sizeof(struct LogEntry),file);
     fclose(file);

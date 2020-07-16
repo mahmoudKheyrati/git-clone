@@ -7,8 +7,6 @@ struct LogEntry{
     String title;
     String description;
     char date[30];
-    String __commitPath;
-    String __commit_filename;
 };
 
 struct LogList{

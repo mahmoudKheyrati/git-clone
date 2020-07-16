@@ -45,12 +45,14 @@ struct LastEditList* getLastEditList(String path, String filename){
 
 //    struct FileEditEntry entry;
 //    fread(&entry,1, sizeof(struct FileEditEntry), file);
-//    print("single item %s\n", entry.filename);
+//    print("single item %s\n", entry.fileAddress);
 
     fread(list->items,list->length, sizeof(struct FileEditEntry),file);
     fclose(file);
 
     return list;
 }
-
+void clearLastEditDb(){
+    deleteFile(DB_LAST_EDIT_PATH,DB_LAST_EDIT_DB_NAME);
+}
 

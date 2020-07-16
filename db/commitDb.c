@@ -46,7 +46,7 @@ struct CommitList* getCommitList(String path, String filename){
 
 //    struct CommitFileEntry entry;
 //    fread(&entry,1, sizeof(struct CommitFileEntry), file);
-//    print("single item %s\n", entry.filename);
+//    print("single item %s\n", entry.fileAddress);
 
     fread(list->items,list->length, sizeof(struct CommitFileEntry),file);
     fclose(file);

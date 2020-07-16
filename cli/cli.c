@@ -54,16 +54,32 @@ void runCli(int argc, String *argv) {
 }
 
 void initCli() {
+    // init first commit and project structure
     if (!isFolderExist(ROOT_FOLDER_NAME)) {
-        // init first commit and project structure
+        //create all folders we needed
         mkdirs(ROOT_FOLDER_NAME);
+        mkdirs(DB_ROOT);
+        mkdirs(DB_LOG_PATH);
+        mkdirs(DB_COMMITS_PATH);
+        mkdirs(DB_LAST_EDIT_PATH);
+        mkdirs(DB_SELECTED_FILE_PATH);
+        mkdirs(OBJECTS_FOLDER_PATH);
+        mkdirs(DEFAULT_CONFIG_PATH);
+        mkdirs(PREV_STATE_PATH);
+        mkdirs(FIRST_STATE_PATH);
+        mkdirs(SINGLE_HASH_FILE_PATH);
+
         deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
         deepCopy(".", FIRST_STATE_PATH, ROOT_FOLDER_NAME);
         String command = malloc(40 * sizeof(char));
         sprintf(command, "cd > %s", CURRENT_PATH_FILE_ADDRESS);
         system(command);
         free(command);
-        commitCli("init jit", "intialize first commit");
+
+        // select all files
+
+
+        commitCli("init jit", "initialize first commit");
     }
 
 
@@ -84,21 +100,21 @@ void statusCli() {
     print("\n\n");
 
     struct LastEditList *list = getChangedFiles();
-    printColored("\n\n\tmodified files : \n",COLOR_LIGHT_BLUE);
+    printColored("\n\n\tmodified files : \n", COLOR_LIGHT_BLUE);
     for (int i = 0; i < list->length; ++i) {
-        if(list->items[i].status==FILE_EDITED){
+        if (list->items[i].status == FILE_EDITED) {
             print("\t\t\t\tedited : %s\n", list->items[i].fileAddress);
         }
     }
-    printColored("\n\n\tnew files : \n",COLOR_GREEN);
-    for (int i = 0; i < list->length; ++i) {
-        if(list->items[i].status==FILE_ADDED){
+    printColored("\n\n\tnew files : \n", COLOR_GREEN);
+    for (int i = 0; i < 10; ++i) {
+        if (list->items[i].status == FILE_ADDED) {
             print("\t\t\t\tadded : %s\n", list->items[i].fileAddress);
         }
     }
-    printColored("\n\n\tdeleted files : \n",COLOR_RED);
+    printColored("\n\n\tdeleted files : \n", COLOR_RED);
     for (int i = 0; i < list->length; ++i) {
-        if(list->items[i].status==FILE_REMOVED){
+        if (list->items[i].status == FILE_REMOVED) {
             print("\t\t\t\tdeleted : %s\n", list->items[i].fileAddress);
         }
     }
@@ -166,7 +182,6 @@ void unSelectCli(String filename) {
 }
 
 void commitCli(String title, String description) {
-    // clean select db
     struct SelectedList *selectedList = malloc(sizeof(struct SelectedList));
     initSelectedList(selectedList, 20);
     selectedList = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
@@ -178,45 +193,117 @@ void commitCli(String title, String description) {
     mkdirs(DB_LOG_PATH);
     logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
 
+    struct LastEditList *editList = malloc(sizeof(struct LastEditList));
+    editList = getLastEditList(DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
 
     // commit selected files
+    // for storing all file hashes to create commit hashcode
+    FILE *allHashes = fopen(ALL_HASHES_FILE_ADDRESS, "w");
+
+    // per each file
     for (int i = 0; i < selectedList->length; ++i) {
         // select all we needed ( selected files )
-        if (selectedList->items[i].isSelect == True) {
-            struct FileSelectEntry fileSelectEntry = selectedList->items[i];
-            print("%s\n", fileSelectEntry.fileAddress);
+        if (selectedList->items[i].isSelect == False) continue;
 
-            struct CommitFileEntry fileEntry = {.status=getChangedFileStatus(fileSelectEntry.fileAddress)};
-            // write content to get hash code
-            mkdirs(".\\.JIT\\TMP");
-            FILE *file = fopen(".\\.JIT\\TMP\\TMP_TO_HASH.tmp", "w");
-            fprintf(file, "%s%s%li", fileSelectEntry.fileAddress, getDate(), getCurrentTime());
-            fclose(file);
+        struct FileSelectEntry fileSelectEntry = selectedList->items[i];
+        print("%s\n", fileSelectEntry.fileAddress);
 
-            // hashing the file
-            String hashCode = malloc(sizeof(char) * 100);
-            hashCode = hashFile(".\\.JIT\\TMP", "TMP_TO_HASH.tmp");
+        struct CommitFileEntry fileEntry = {.status=getChangedFileStatus(fileSelectEntry.fileAddress)};
+        // write content to get hash code
+        mkdirs(SINGLE_HASH_FILE_PATH);
+        FILE *file = fopen(SINGLE_HASH_FILE_ADDRESS, "w");
+        fprintf(file, "%s%s%li", fileSelectEntry.fileAddress, getDate(), getCurrentTime());
+        fclose(file);
+
+        // hashing the file
+        String hashCode = malloc(sizeof(char) * 100);
+        hashCode = hashFile2(SINGLE_HASH_FILE_ADDRESS);
 //            print("hash code : %s\n", hashCode);
-            //delete tmp file
-            deleteFile2(".\\.JIT\\TMP\\TMP_TO_HASH.tmp");
-
-            // filling file entry
-            fileEntry.id = hashCode;
-            strcpy(fileEntry.date, getLastModifiedOfFile2(fileSelectEntry.fileAddress));
-            addCommitFileEntry(commitList, fileEntry);
-
-            // create new object for changed file and store it
-
-//            saveCommitList(commitList,OBJECTS_FOLDER_PATH,hashCode);
-//
-//            struct LogEntry logEntry = {.};
+        //delete tmp file
+        deleteFile2(SINGLE_HASH_FILE_ADDRESS);
 
 
+        // create new object for changed file and store it
+        String prevPath = malloc(2000 * sizeof(char));
+        sprintf(prevPath, "%s\\%s", PREV_STATE_PATH, fileSelectEntry.fileAddress);
 
-            free(hashCode);
+        // determine changes
+        String A = readFile2(prevPath);
+        String B = readFile2(fileSelectEntry.fileAddress);
+
+        long int lenA = strlen(A);
+        long int lenB = strlen(B);
+
+
+        int **lookupTable = createLookupTable(A, B);
+        struct DifferenceList *differenceList = parsLookUpTable(lookupTable, A, B, lenA, lenB);
+
+        struct DifferenceList *list = differenceList;
+        struct DifferenceList *list2 = StringDiffChecker(A, B);
+        String objectFilename = malloc(70 * sizeof(char));
+        sprintf(objectFilename, "%s.OBJ", hashCode);
+        diffSaver(list, OBJECTS_FOLDER_PATH, objectFilename);
+
+        // filling file entry
+        //set status
+
+        for (int j = 0; j < editList->length; ++j) {
+            if (strcmp(editList->items[i].fileAddress, fileSelectEntry.fileAddress) == 0) {
+                fileEntry.status = editList->items[i].status;
+                break;
+            }
         }
-        // create commit hash code and push to commits and logs logs
+
+        fileEntry.id = objectFilename;
+        fileEntry.fileAddress = fileSelectEntry.fileAddress;
+        strcpy(fileEntry.date, getLastModifiedOfFile2(fileSelectEntry.fileAddress));
+
+        addCommitFileEntry(commitList, fileEntry);
+
+
+        // write all hashed for generate commit hashcode
+        fprintf(allHashes, "%s", hashCode);
+//        free(hashCode);
     }
+    fclose(allHashes);
+    // create commit hashCode
+    String commitHashCode = hashFile2(ALL_HASHES_FILE_ADDRESS);
+    String commitFilename = malloc(70 * sizeof(char));
+    sprintf(commitFilename, "%s.CMT", commitHashCode);
+    //saving commit
+    saveCommitList(commitList, DB_COMMITS_PATH, commitFilename);
+    //add to log list
+    struct LogEntry logEntry = {};
+    strcpy(logEntry.date, getDate());
+    logEntry.title = title;
+    logEntry.description = description;
+    logEntry.id = commitFilename;
+    addLogEntry(logList, logEntry);
+    saveLogList(logList, DB_LOG_PATH, DB_LOG_DB_NAME);
+
+    // update prev state
+    String fileAddressInPrevState = malloc(sizeof(char) * 300);
+
+    for (int k = 0; k < editList->length; ++k) {
+        struct FileEditEntry entry = editList->items[k];
+
+        sprintf(fileAddressInPrevState, "%s//%s", PREV_STATE_PATH, entry.fileAddress);
+        if (entry.status == FILE_EDITED || entry.status == FILE_ADDED) {
+            // copy new file insted
+            fileCopy(extractFilePathWithFileAddress(entry.fileAddress),
+                     extractFilePathWithFileAddress(fileAddressInPrevState),
+                     extractFileNameWithFileAddress(entry.fileAddress));
+
+        } else if (entry.status == FILE_REMOVED) {
+            // i don't know
+            deleteFile2(fileAddressInPrevState);
+        }
+    }
+    free(fileAddressInPrevState);
+    // empty selected list
+    clearLastEditDb();
+    // save edit list
+    saveEditList(editList, DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
 }
 
 void logCli() {
@@ -240,14 +327,14 @@ void help() {
     printColored("  -show status of the files in workspace\n", COLOR_YELLOW);
     print("\n");
 
-    printColored(" select [filename] ", COLOR_BLOCK_BLUE);
+    printColored(" select [fileAddress] ", COLOR_BLOCK_BLUE);
     printColored("  -add file to current commit\n", COLOR_YELLOW);
-    printColored("filename can has relative or absolute path\n", COLOR_YELLOW);
+    printColored("fileAddress can has relative or absolute path\n", COLOR_YELLOW);
     print("\n");
 
     printColored(" unselect ", COLOR_BLOCK_BLUE);
     printColored("  -remove file from current commit\n", COLOR_YELLOW);
-    printColored("filename can has relative or absolute path\n", COLOR_YELLOW);
+    printColored("fileAddress can has relative or absolute path\n", COLOR_YELLOW);
     print("\n");
 
     printColored(" commit [title, description] ", COLOR_BLOCK_BLUE);

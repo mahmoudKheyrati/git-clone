@@ -46,7 +46,7 @@ struct SelectedList* getSelectedList(String path, String filename){
 
 //    struct FileSelectEntry entry;
 //    fread(&entry,1, sizeof(struct FileSelectEntry), file);
-//    print("single item %s\n", entry.filename);
+//    print("single item %s\n", entry.fileAddress);
 
     fread(list->items,list->length, sizeof(struct FileSelectEntry),file);
     fclose(file);

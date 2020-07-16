@@ -5,7 +5,7 @@ String fileAddressMaker(String path, String filename);
 /**
  * @ifnot free the string you causes memory leak
  * @param path directory of your file
- * @param filename filename
+ * @param filename fileAddress
  * @return file data as a Text
  */
 String readFile(String path, String filename) {
@@ -273,7 +273,7 @@ String getLastModifiedOfFile2(String fileAddress) {
  *
  * @param path file directory
  * @param filename
- * @return concat path/filename
+ * @return concat path/fileAddress
  */
 String fileAddressMaker(String path, String filename) {
     // create file address
