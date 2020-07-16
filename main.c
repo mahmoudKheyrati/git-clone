@@ -5,16 +5,16 @@
 int main(int argc, String *argv) {
     String *ar = malloc(sizeof(String *) * 10);
     ar[0] = "git";
-    ar[1] = "commit";
+    ar[1] = "init";
     ar[2] = ".\\test\\addedNewFile.txt";
 //    print("%i \n%i\n",isFolderExist("./dbs/selected"), isFolderExist(".\\dbs\\selected"));
-    String source =".";
-    String destination = malloc(100* sizeof(char));
-    destination =PREV_STATE_PATH;
-//    deepCopy(".","hffghf");
-fileCopy(".\\test",".\\path","old.txt");
+//    String source = ".";
+//    String destination = malloc(100 * sizeof(char));
+//    destination = PREV_STATE_PATH;
+////    deepCopy(".","hffghf");
+//    fileCopy(".\\test", ".\\path", "old.txt");
 
-//    runCli(2,ar);
+    runCli(1,ar);
 //    runCli(argc, argv);
 //    trackFilesExample();
     return 0;

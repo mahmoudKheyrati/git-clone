@@ -53,6 +53,18 @@ void runCli(int argc, String *argv) {
 }
 
 void initCli() {
+    if (!isFolderExist(ROOT_FOLDER_NAME)) {
+        // init first commit and project structure
+        mkdirs(ROOT_FOLDER_NAME);
+        deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
+        deepCopy(".", FIRST_STATE_PATH, ROOT_FOLDER_NAME);
+        String command = malloc(40 * sizeof(char));
+        sprintf(command, "cd > %s", CURRENT_PATH_FILE_ADDRESS);
+        system(command);
+        free(command);
+        commitCli("init jit", "intialize first commit");
+    }
+
 
 }
 
@@ -196,7 +208,7 @@ void commitCli(String title, String description) {
 
     // commit selected files
     for (int i = 0; i < selectedList->length; ++i) {
-            // select all we needed ( selected files )
+        // select all we needed ( selected files )
         if (selectedList->items[i].isSelect == True) {
             struct FileSelectEntry fileSelectEntry = selectedList->items[i];
             print("%s\n", fileSelectEntry.fileAddress);

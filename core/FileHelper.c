@@ -346,9 +346,9 @@ String extractFilePathWithFileAddress(String fileAddress){
 /*
  * only works in windows powerd by robocopy package
  */
-void deepCopy(String source , String destination){
+void deepCopy(String source , String destination,String exclude){
     String command = malloc(sizeof(char)*300);
-    sprintf(command, "robocopy %s %s /E > %s ", source,destination,TMP_RESULT_ADDRESS);
+    sprintf(command, "robocopy %s %s /E /XD %s > %s ", source,destination,exclude, TMP_RESULT_ADDRESS);
     system(command);
     free(command);
     deleteFile2(TMP_RESULT_ADDRESS);

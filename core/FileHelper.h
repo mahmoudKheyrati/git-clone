@@ -60,7 +60,7 @@ String extractFileNameWithFileAddress(String fileAddress);
 
 String extractFilePathWithFileAddress(String fileAddress);
 
-void deepCopy(String source, String destination);
+void deepCopy(String source , String destination,String exclude);
 
 void fileCopy(String source, String destination, String filename);
 
