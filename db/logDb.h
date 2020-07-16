@@ -3,9 +3,9 @@
 #include "../core/Core.h"
 
 struct LogEntry{
-    String id;
-    String title;
-    String description;
+    char id[40];
+    char title[100];
+    char description[200];
     char date[30];
 };
 

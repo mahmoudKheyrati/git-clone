@@ -230,7 +230,6 @@ void commitCli(String title, String description) {
         fclose(file);
         // hashing the file
         String hashCode = malloc(sizeof(char) * 100);
-        print("%s\n","hash.hash");
         hashCode = hashFile2("hash.hash");
 
         hashCode[strlen(hashCode)-1]='\0';
@@ -269,8 +268,11 @@ void commitCli(String title, String description) {
             }
         }
 
-        fileEntry.id = objectFilename;
-        fileEntry.fileAddress = fileSelectEntry.fileAddress;
+        strcpy(fileEntry.id,objectFilename);
+        strcpy(fileEntry.fileAddress , fileSelectEntry.fileAddress);
+
+//        fileEntry.id = objectFilename;
+//        fileEntry.fileAddress = fileSelectEntry.fileAddress;
         strcpy(fileEntry.date, getLastModifiedOfFile2(fileSelectEntry.fileAddress));
 
         addCommitFileEntry(commitList, fileEntry);
@@ -289,11 +291,15 @@ void commitCli(String title, String description) {
     //saving commit
     saveCommitList(commitList, DB_COMMITS_PATH, commitFilename);
     //add to log list
+
     struct LogEntry logEntry = {};
     strcpy(logEntry.date, getDate());
-    logEntry.title = title;
-    logEntry.description = description;
-    logEntry.id = commitFilename;
+    strcpy(logEntry.id, commitFilename);
+    strcpy(logEntry.title, title);
+    strcpy(logEntry.date, description);
+//    logEntry.title = "title";
+//    logEntry.description = "des";
+//    logEntry.id = commitFilename;
     addLogEntry(logList, logEntry);
     saveLogList(logList, DB_LOG_PATH, DB_LOG_DB_NAME);
 

@@ -107,7 +107,7 @@ struct DifferenceList* parsLookUpTable(int ** list , String firstString, String 
         cur.startY=startY;
         mainPoints[mainPointsSize++]=cur;
 
-        print("(%li, %li) -> (%li, %li)\n",cur.startX,cur.startY,cur.endX,cur.endY);
+//        print("(%li, %li) -> (%li, %li)\n",cur.startX,cur.startY,cur.endX,cur.endY);
 
 
         k+=count;
