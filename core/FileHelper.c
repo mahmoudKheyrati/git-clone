@@ -28,6 +28,24 @@ String readFile(String path, String filename) {
 
 }
 
+String readFile2(String fileAddress) {
+    FILE *file = fopen(fileAddress, "r");
+    if (!file) {
+        return NULL;
+    }
+    // read file line by line
+    String result = malloc(sizeof(char) * MAX_RESULT_SIZE);
+    String line = malloc(sizeof(char) * MAX_LINE_SIZE);
+    while ((line = fgets(line, MAX_LINE_SIZE, file))) {
+        strcat(result, line);
+    }
+    free(fileAddress);
+    free(line);
+    fclose(file);
+    return result;
+
+}
+
 String * readLines(String path, String filename, int * n ) {
     String fileAddress = fileAddressMaker(path, filename);
 

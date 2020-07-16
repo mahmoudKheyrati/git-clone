@@ -1,6 +1,7 @@
 #include "App.h"
 
 String *getAllFilesInRoot(int *n) {
+    int skipToGetRelativePath = strlen(readFile2(CURRENT_PATH_FILE_ADDRESS));
     system("dir /s /b /o:gn /a-d > junki.junki.out.some.tmp");
     String wholeString = readFile("./", "junki.junki.out.some.tmp");
     long int len = strlen(wholeString);
@@ -18,9 +19,11 @@ String *getAllFilesInRoot(int *n) {
         String line = malloc(MAX_LINE_SIZE);
         line[0]='\0';
         fgets(line,MAX_LINE_SIZE, file);
-        result[index++] = line;
         line[strlen(line)-1]='\0';
-        print("%li ) %s\n",j, result[index-1]);
+        line+=skipToGetRelativePath;
+        result[index++] = line;
+
+//        print("%li ) %s\n",j, result[index-1]);
     }
     *n = index;
     fclose(file);
@@ -85,7 +88,7 @@ struct LastEditList *getChangedFiles() {
 
 
     for (int j = 0; j < filesListSize; ++j) {
-        print("we %s\n",filesList[j]);
+//        print("we %s\n",filesList[j]);
         int isFind = 0;
         int index = 0;
         for (int i = 0; i < currentEditList->length; ++i) {
@@ -138,18 +141,18 @@ trackFiles(String *edited, String *added, String *deleted, int *editSize, int *a
         struct FileEditEntry entry = list->items[j];
         switch (entry.status) {
             case FILE_EDITED:
-//                print("edited : %s\n", entry.fileAddress);
+                print("edited : %s\n", entry.fileAddress);
                 edited[eSize++] = entry.fileAddress;
                 break;
             case FILE_ADDED:
-//                print("added : %s\n", entry.fileAddress);
+                print("added : %s\n", entry.fileAddress);
                 added[aSize++] = entry.fileAddress;
                 break;
             case FILE_NO_CHANGE:
-//                print("no change : %s\n", entry.fileAddress);
+                print("no change : %s\n", entry.fileAddress);
                 break;
             case FILE_REMOVED:
-//                print("removed : %s\n", entry.fileAddress);
+                print("removed : %s\n", entry.fileAddress);
                 deleted[dSize++] = entry.fileAddress;
                 break;
         }

@@ -24,6 +24,8 @@
 
 String readFile(String path, String filename);
 
+String readFile2(String fileAddress);
+
 String *readLines(String path, String filename, int *n);
 
 enum Boolean writeFile(String path, String filename, String content);
