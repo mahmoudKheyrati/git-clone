@@ -274,7 +274,6 @@ void commitCli(String title, String description) {
         struct DifferenceList *differenceList = parsLookUpTable(lookupTable, A, B, lenA, lenB);
         print("after didd list \n");
         struct DifferenceList *list = differenceList;
-        struct DifferenceList *list2 = StringDiffChecker(A, B);
         String objectFilename = malloc(70 * sizeof(char));
         sprintf(objectFilename, "%s.OBJ", hashCode);
         diffSaver(list, OBJECTS_FOLDER_PATH, objectFilename);
@@ -381,6 +380,7 @@ void commitCli(String title, String description) {
     // save edit list
     saveEditList(editList, DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
     print("after savign edit list \n");
+    deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
 }
 
 void logCli() {
@@ -418,12 +418,14 @@ void resetCli(String commitId) {
     // copy first to prev
     deepCopy(FIRST_STATE_PATH, PREV_STATE_PATH, ROOT_FOLDER_NAME);
     print("index = %i\n", index);
+    // for each commit
     for (int i = 0; i < index + 1; ++i) {
         struct LogEntry entry = logList->items[i];
         struct CommitList *commitList = malloc(sizeof(struct CommitList));
         initCommitList(commitList, 20);
         commitList = getCommitList(DB_COMMITS_PATH, entry.id);
         print("commit len : %li\n", commitList->length);
+        // per each commit file
         for (int j = 0; j < commitList->length; ++j) {
             struct CommitFileEntry commitFileEntry = commitList->items[j];
             print("%s %s %s %i\n", commitFileEntry.id, commitFileEntry.fileAddress, commitFileEntry.date,
@@ -436,28 +438,30 @@ void resetCli(String commitId) {
 
                 String path = extractFilePathWithFileAddress(commitFileEntry.fileAddress);
                 String name = extractFileNameWithFileAddress(commitFileEntry.fileAddress);
-                struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, entry.id);
-                print("prvs : %s \n",prevStateAddress);
-                print("path : %s \n",path);
-                print("name : %s \n",name);
-                if (commitFileEntry.status == CHANGED_FILE) {
+                struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, commitFileEntry.id);
+                print("prvs : %s \n", prevStateAddress);
+                print("path : %s \n", path);
+                print("name : %s \n", name);
+//                if (commitFileEntry.status == CHANGED_FILE) {
                     String A = readFile2(prevStateAddress);
-                    nextSequenceGenerator(A, changeList, path, name);
-                } else {
-                    String A = malloc(1 * sizeof(char));
-                    A[0] = '\0';
-
+                    print("A: %s\n",A);
                     nextSequenceGenerator(A, changeList, path, name);
 
-                }
+//                } else {
+//                    String A = malloc(2 * sizeof(char));
+//                    A = " ";
+//
+//                    nextSequenceGenerator(A, changeList, ".\\out", name);
+//
+//                }
 
             } else if (commitFileEntry.status == REMOVED_FILE) {
                 //remove file
                 deleteFile2(commitFileEntry.fileAddress);
             }
-            deepCopy(PREV_STATE_PATH, ".", ROOT_FOLDER_NAME);
-
         }
+        deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
+
     }
 }
 

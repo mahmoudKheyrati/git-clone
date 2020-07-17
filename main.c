@@ -6,6 +6,8 @@
 #include "examples/diffCheckerExamples/finalExample.h"
 
 int main(int argc, String *argv) {
+//    finalExample();
+//    return 0;
 
 //    struct LastEditList *currentList = malloc(sizeof(struct LastEditList));
 //    initLastEditList(currentList,20);
@@ -93,7 +95,7 @@ int main(int argc, String *argv) {
     String *ar = malloc(sizeof(String *) * 10);
     ar[0] = "git";
     ar[1] = "reset";
-    ar[2] = "f566a90baaf879b151adb9acbc37b954.CMT";
+    ar[2] = "f9a789f9eeec3f54de71cf42790675a6.CMT";
     ar[3] = "desription";
 //    ar[2] = ".\\test\\addedNewFile.txt";
 //    print("%i \n%i\n",isFolderExist("./dbs/selected"), isFolderExist(".\\dbs\\selected"));
@@ -104,8 +106,8 @@ int main(int argc, String *argv) {
 //    fileCopy(".\\test", ".\\path", "old.txt");
 //    chooseColor();
 //    print("%s\n",SINGLE_HASH_FILE_ADDRESS);
-    runCli(4,ar);
-//    runCli(argc, argv);
+//    runCli(4,ar);
+    runCli(argc, argv);
 //    trackFilesExample();
     return 0;
 }
