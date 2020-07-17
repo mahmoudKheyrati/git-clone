@@ -396,7 +396,7 @@ void logCli() {
 }
 
 void resetCli(String commitId) {
-    print("%s\n", commitId);
+    print("id : %s\n", commitId);
     struct LogList *logList = malloc(sizeof(struct LogList));
     initLogList(logList, 20);
     logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
@@ -416,7 +416,7 @@ void resetCli(String commitId) {
         return;
     }
     // copy first to prev
-    deepCopy(FIRST_STATE_PATH, ".", ROOT_FOLDER_NAME);
+    deepCopy(FIRST_STATE_PATH, PREV_STATE_PATH, ROOT_FOLDER_NAME);
     print("index = %i\n", index);
     for (int i = 0; i < index + 1; ++i) {
         struct LogEntry entry = logList->items[i];
@@ -432,20 +432,22 @@ void resetCli(String commitId) {
             if (commitFileEntry.status == ADD_NEW_FILE || commitFileEntry.status == CHANGED_FILE) {
                 String prevStateAddress = malloc(sizeof(char) * 200);
 
-                sprintf(prevStateAddress, "%s\\%s", ".", commitFileEntry.fileAddress);
+                sprintf(prevStateAddress, "%s\\%s", PREV_STATE_PATH, commitFileEntry.fileAddress);
 
+                String path = extractFilePathWithFileAddress(commitFileEntry.fileAddress);
+                String name = extractFileNameWithFileAddress(commitFileEntry.fileAddress);
+                struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, entry.id);
+                print("prvs : %s \n",prevStateAddress);
+                print("path : %s \n",path);
+                print("name : %s \n",name);
                 if (commitFileEntry.status == CHANGED_FILE) {
                     String A = readFile2(prevStateAddress);
-                    struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, entry.id);
-                    nextSequenceGenerator(A, changeList, extractFilePathWithFileAddress(commitFileEntry.fileAddress),
-                                          extractFileNameWithFileAddress(commitFileEntry.fileAddress));
+                    nextSequenceGenerator(A, changeList, path, name);
                 } else {
                     String A = malloc(1 * sizeof(char));
                     A[0] = '\0';
 
-                    struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, entry.id);
-                    nextSequenceGenerator(A, changeList, extractFilePathWithFileAddress(commitFileEntry.fileAddress),
-                                          extractFileNameWithFileAddress(commitFileEntry.fileAddress));
+                    nextSequenceGenerator(A, changeList, path, name);
 
                 }
 
@@ -453,8 +455,7 @@ void resetCli(String commitId) {
                 //remove file
                 deleteFile2(commitFileEntry.fileAddress);
             }
-
-            deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
+            deepCopy(PREV_STATE_PATH, ".", ROOT_FOLDER_NAME);
 
         }
     }
