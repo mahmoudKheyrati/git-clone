@@ -14,7 +14,7 @@ struct DifferenceSequence {
     short int Type;
     struct Point start;
     struct Point end;
-    String data;
+    char data[9999];
 };
 struct DifferencePoint {
     short int diffType;

@@ -3,7 +3,11 @@
 #include "examples/app/trackFilesExample.h"
 #include "examples/color.h"
 #include "examples/dbs/LogDbExample.h"
+#include "examples/diffCheckerExamples/finalExample.h"
+
 int main(int argc, String *argv) {
+    finalExample();
+    return 0;
 //    struct LastEditList *currentList = malloc(sizeof(struct LastEditList));
 //    initLastEditList(currentList,20);
 //    currentList= getLastEditList(".\\.JIT\\DBS\\LAST_EDIT", "LAST_EDIT.db");

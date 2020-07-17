@@ -46,7 +46,8 @@ parser(struct EqualPoint *points, int size, String oldString, String newString, 
 //        print("(%i , %i) -> (%i , %i)\n", 0 , 0, points[0].startX, points[0].startY);
         String data = rangeSelect(newString, 0, points[0].startY);
 
-        struct DifferenceSequence sequence = {INSERT, {0, 0}, {points[0].startX, points[0].startY}, .data=data};
+        struct DifferenceSequence sequence = {INSERT, {0, 0}, {points[0].startX, points[0].startY}};
+        strcpy(sequence.data,data);
         add(list, sequence);
 
     } else if (points[0].startY == 0) {
@@ -69,7 +70,8 @@ parser(struct EqualPoint *points, int size, String oldString, String newString, 
             String data = rangeSelect(newString, firstSequence.endY, secondSequence.startY);
 
             struct DifferenceSequence sequence = {INSERT, {firstSequence.endX, firstSequence.endY},
-                                                  {secondSequence.startX, secondSequence.startY}, .data=data};
+                                                  {secondSequence.startX, secondSequence.startY}};
+            strcpy(sequence.data,data);
             add(list, sequence);
 
         } else if (firstSequence.endY == secondSequence.startY) {
@@ -81,6 +83,7 @@ parser(struct EqualPoint *points, int size, String oldString, String newString, 
             add(list, sequence);
         }
     }
+    if(size<=0) return list;
     if (points[size - 1].endX == maxX) {
         //update
 //        print("insert\t");
@@ -88,7 +91,8 @@ parser(struct EqualPoint *points, int size, String oldString, String newString, 
         String data = rangeSelect(newString, points[size - 1].endY, maxY);
 
         struct DifferenceSequence sequence = {INSERT, {points[size - 1].endX, points[size - 1].endY},
-                                              {maxX, maxY}, .data=data};
+                                              {maxX, maxY}};
+        strcpy(sequence.data,data);
         add(list, sequence);
     } else if (points[size - 1].endY == maxY) {
         //delete

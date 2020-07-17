@@ -7,12 +7,6 @@ enum COMMIT_FILE_STATUS {
     REMOVED_FILE = -1, CHANGED_FILE , ADD_NEW_FILE
 };
 
-//struct CommitFileEntry {
-//    String id;
-//    String fileAddress;
-//    char date[30];
-//    short int status;
-//};
 struct CommitFileEntry {
     char id[40];
     char fileAddress[200];

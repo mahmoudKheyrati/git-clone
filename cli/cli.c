@@ -159,7 +159,7 @@ void selectCli(String filename) {
     if (isFind == True) {
         print("this file is already selected\n");
     } else {
-        if(isFileExist2(filename)==False){
+        if (isFileExist2(filename) == False) {
             printColored("this file dosn't exists. please enter the correct file\n", COLOR_RED);
             return;
         }
@@ -211,7 +211,7 @@ void commitCli(String title, String description) {
         return;
     }
     for (int l = 0; l < selectedList->length; ++l) {
-        print("select to com : %s\n ",selectedList->items[l].fileAddress);
+        print("select to com : %s\n ", selectedList->items[l].fileAddress);
     }
 
     struct CommitList *commitList = malloc(sizeof(struct CommitList));
@@ -284,7 +284,22 @@ void commitCli(String title, String description) {
 
         for (int j = 0; j < editList->length; ++j) {
             if (strcmp(editList->items[i].fileAddress, fileSelectEntry.fileAddress) == 0) {
-                fileEntry.status = editList->items[i].status;
+                switch (editList->items[i].status) {
+                    case FILE_ADDED:
+                        fileEntry.status = ADD_NEW_FILE;
+                        break;
+                    case FILE_EDITED:
+                        fileEntry.status = CHANGED_FILE;
+                        break;
+                    case FILE_REMOVED:
+                        fileEntry.status = REMOVED_FILE;
+                        break;
+                    case FILE_NO_CHANGE:
+                        break;
+                }
+
+                //bug rises here
+//                fileEntry.status = editList->items[i].status;
                 break;
             }
         }
@@ -310,15 +325,15 @@ void commitCli(String title, String description) {
         print("edit list len: %li\n", editList->length);
         for (int k = 0; k < editList->length; ++k) {
             struct FileEditEntry entry = editList->items[k];
-            if(strcmp(selectedList->items[i].fileAddress,entry.fileAddress)!=0) continue;
+            if (strcmp(selectedList->items[i].fileAddress, entry.fileAddress) != 0) continue;
             sprintf(fileAddressInPrevState, "%s\\%s", PREV_STATE_PATH, entry.fileAddress);
-            print("%i ) %s \n", k , fileAddressInPrevState);
+            print("%i ) %s \n", k, fileAddressInPrevState);
             if (entry.status == FILE_EDITED || entry.status == FILE_ADDED) {
                 // copy new file insted
                 print("entry . file add : %s \n ", entry.fileAddress);
                 print("copy : from : %s\n", extractFilePathWithFileAddress(entry.fileAddress));
                 print("copy : to : %s\n", extractFilePathWithFileAddress(fileAddressInPrevState));
-                print("copy : name : %s\n",extractFileNameWithFileAddress(entry.fileAddress));
+                print("copy : name : %s\n", extractFileNameWithFileAddress(entry.fileAddress));
 
 
                 fileCopy(extractFilePathWithFileAddress(entry.fileAddress),
@@ -381,6 +396,7 @@ void logCli() {
 }
 
 void resetCli(String commitId) {
+    print("%s\n", commitId);
     struct LogList *logList = malloc(sizeof(struct LogList));
     initLogList(logList, 20);
     logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
@@ -400,22 +416,25 @@ void resetCli(String commitId) {
         return;
     }
     // copy first to prev
-    deepCopy(FIRST_STATE_PATH, PREV_STATE_PATH, ROOT_FOLDER_NAME);
+    deepCopy(FIRST_STATE_PATH, ".", ROOT_FOLDER_NAME);
+    print("index = %i\n", index);
     for (int i = 0; i < index + 1; ++i) {
         struct LogEntry entry = logList->items[i];
         struct CommitList *commitList = malloc(sizeof(struct CommitList));
         initCommitList(commitList, 20);
         commitList = getCommitList(DB_COMMITS_PATH, entry.id);
+        print("commit len : %li\n", commitList->length);
         for (int j = 0; j < commitList->length; ++j) {
             struct CommitFileEntry commitFileEntry = commitList->items[j];
             print("%s %s %s %i\n", commitFileEntry.id, commitFileEntry.fileAddress, commitFileEntry.date,
                   commitFileEntry.status);
+//            continue;
             if (commitFileEntry.status == ADD_NEW_FILE || commitFileEntry.status == CHANGED_FILE) {
                 String prevStateAddress = malloc(sizeof(char) * 200);
 
-                sprintf(prevStateAddress, "%s\\%s", PREV_STATE_PATH, commitFileEntry.fileAddress);
+                sprintf(prevStateAddress, "%s\\%s", ".", commitFileEntry.fileAddress);
 
-                if (commitFileEntry.status == FILE_EDITED) {
+                if (commitFileEntry.status == CHANGED_FILE) {
                     String A = readFile2(prevStateAddress);
                     struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, entry.id);
                     nextSequenceGenerator(A, changeList, extractFilePathWithFileAddress(commitFileEntry.fileAddress),
@@ -443,20 +462,20 @@ void resetCli(String commitId) {
 
 void stashCli(String commitId) {
     deepCopy(".", ".\\.JIT\\STASH", ROOT_FOLDER_NAME);
-    writeFile(".\\.JIT\\","IN_STASH.TMP","1");
+    writeFile(".\\.JIT\\", "IN_STASH.TMP", "1");
     // reset
 //    resetCli(commitId);
 
 }
 
 void stashPopCli() {
-    String result = readFile(".\\.JIT\\","IN_STASH.TMP");
-    print("%s",result);
+    String result = readFile(".\\.JIT\\", "IN_STASH.TMP");
+    print("%s", result);
 
-    if (strcmp(result,"1")==0) {
+    if (strcmp(result, "1") == 0) {
 
         deepCopy(".\\.JIT\\STASH", ".", ROOT_FOLDER_NAME);
-        writeFile(".\\.JIT\\","IN_STASH.TMP","0");
+        writeFile(".\\.JIT\\", "IN_STASH.TMP", "0");
         system("cd .\\.JIT\\STASH &&  DEL /F/Q/S *.* > NUL");
 
     } else {
