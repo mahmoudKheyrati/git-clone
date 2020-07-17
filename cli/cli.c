@@ -23,6 +23,8 @@ void help();
 
 void getCommitDetailCli(String commitId);
 
+void diffViewerCli(String commitId, String filename);
+
 void runCli(int argc, String *argv) {
     String mainCommand = argv[1];
 //    print("%s\n", mainCommand);
@@ -51,6 +53,8 @@ void runCli(int argc, String *argv) {
         }
     } else if(strcmp(mainCommand,"detail")==0){
             getCommitDetailCli(argv[2]);
+    }else if(strcmp(mainCommand,"diff")==0){
+        diffViewerCli(argv[2],argv[3]);
     } else {
         // anything else , use need help
         help();
@@ -73,6 +77,7 @@ void initCli() {
         mkdirs(PREV_STATE_PATH);
         mkdirs(FIRST_STATE_PATH);
         mkdirs(SINGLE_HASH_FILE_PATH);
+        mkdirs(OLD_STRING_PATH);
 
         deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
         deepCopy(".", FIRST_STATE_PATH, ROOT_FOLDER_NAME);
@@ -601,8 +606,164 @@ void getCommitDetailCli(String commitId){
 
 }
 
-void diffCli(){
-    
+String getOldString(String commitId,String filename) {
+    struct LogList *logList = malloc(sizeof(struct LogList));
+    initLogList(logList, 20);
+    logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
+    int isFind = 0;
+    int index = 0;
+    for (int i = 0; i < logList->length; ++i) {
+        struct LogEntry entry = logList->items[i];
+        if (strcmp(entry.id, commitId) == 0) {
+            isFind = 1;
+            index = i;
+        }
+
+    }
+    if (isFind == False) {
+        printColored("there isn't such commit id please enter the correct one!\n", COLOR_RED);
+        return "";
+    }
+    // copy first to prev
+//    deepCopy(FIRST_STATE_PATH, PREV_STATE_PATH, ROOT_FOLDER_NAME);
+    fileCopy(FIRST_STATE_PATH, OLD_STRING_PATH,filename);
+    // for each commit
+    for (int i = 0; i < index + 1; ++i) {
+        struct LogEntry entry = logList->items[i];
+        struct CommitList *commitList = malloc(sizeof(struct CommitList));
+        initCommitList(commitList, 20);
+        commitList = getCommitList(DB_COMMITS_PATH, entry.id);
+        // per each commit file
+        for (int j = 0; j < commitList->length; ++j) {
+            struct CommitFileEntry commitFileEntry = commitList->items[j];
+            if(strcmp(commitFileEntry.fileAddress,filename)!=0){
+                continue;
+            }
+//            print("%s %s %s %i\n", commitFileEntry.id, commitFileEntry.fileAddress, commitFileEntry.date,
+//                  commitFileEntry.status);
+//            continue;
+            if (commitFileEntry.status == ADD_NEW_FILE || commitFileEntry.status == CHANGED_FILE) {
+                String prevStateAddress = malloc(sizeof(char) * 200);
+
+                sprintf(prevStateAddress, "%s\\%s", OLD_STRING_PATH, commitFileEntry.fileAddress);
+
+                String path = extractFilePathWithFileAddress(commitFileEntry.fileAddress);
+                String name = extractFileNameWithFileAddress(commitFileEntry.fileAddress);
+                struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, commitFileEntry.id);
+                String _path = malloc(strlen(path)+10);
+                String _name = malloc(strlen(name)+10);
+                char base[10]=".\\.JIT\\";
+                _path=strcat(base,path);
+                _name=strcat(base,name);
+                String A = readFile2(prevStateAddress);
+                print("A: %s\n",A);
+                nextSequenceGenerator(A, changeList, _path, _name);
+                free(_path);
+                free(_name);
+                free(path);
+                free(name);
+
+            } else if (commitFileEntry.status == REMOVED_FILE) {
+                //remove file
+                printColored("removed : ",COLOR_RED);
+                print("%s \n",commitFileEntry.fileAddress);
+                deleteFile2(commitFileEntry.fileAddress);
+            }
+        }
+//        deepCopy(, PREV_STATE_PATH, ROOT_FOLDER_NAME);
+        fileCopy(ROOT_FOLDER_NAME, OLD_STRING_PATH,filename);
+
+    }
+
+    return readFile(".\\.JIT\\TMP\\OLD",filename);
+
+}
+
+void diffViewerCli(String commitId, String filename){
+    // finding commit id
+    struct LogList *logList = malloc(sizeof(struct LogList));
+    initLogList(logList, 20);
+    logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
+    int isFind = 0;
+    int index = 0;
+    for (int i = 0; i < logList->length; ++i) {
+        struct LogEntry entry = logList->items[i];
+        if (strcmp(entry.id, commitId) == 0) {
+//            print("find commit id\n");
+            isFind = 1;
+            index = i;
+        }
+
+    }
+    if (isFind == False) {
+        printColored("there isn't such commit id please enter the correct one!\n", COLOR_RED);
+        return;
+    }
+    struct LogEntry logEntry = logList->items[index];
+
+    struct CommitList *commitList = malloc(sizeof(struct CommitList));
+    initCommitList(commitList, 20);
+    commitList = getCommitList(DB_COMMITS_PATH, logEntry.id);
+
+    int fileIndex = 0 ;
+    int isFileCommitFound = 0 ;
+    for (int l = 0; l < commitList->length; ++l) {
+        if(strcmp(commitList->items[l].fileAddress,filename)==0){
+            fileIndex=l;
+            isFileCommitFound=1;
+        }
+    }
+
+    if (isFileCommitFound == False) {
+        printColored("there isn't such file address iside this commit id. please enter the correct one!\n", COLOR_RED);
+        return;
+    }
+
+    String oldString = getOldString(logEntry.id,filename);
+//    print("old = %s \n",oldString);
+
+    struct DifferenceList* changeList = diffReader(OBJECTS_FOLDER_PATH,commitList->items[fileIndex].id);
+
+    /********* generate **/
+//    String fileAddress = fileAddressMaker(outputPath, filename);
+//    print("gen fileadd : %s\n",fileAddress);
+//    FILE* file = fopen(fileAddress,"w");
+//    print("gen diff len : %i\n", differenceList->length);
+
+    for (int i = 0; i < changeList->length; ++i) {
+        struct DifferenceSequence currentSequence = changeList->differenceSequences[i];
+//        print("gen : %i \t (%li, %li ) -> (%li , %li)\n",currentSequence.Type, currentSequence.start.x, currentSequence.start.y, currentSequence.end.x,currentSequence.end.y );
+
+        struct DifferenceSequence nextSequence = changeList->differenceSequences[i + 1];
+        if (currentSequence.Type == INSERT) {
+//            print("gen before for : %li %li\n",currentSequence.end.y, currentSequence.start.y);
+            for (long int k = 0; k < currentSequence.end.y - currentSequence.start.y; ++k) {
+//                print("%c",currentSequence.data[k]);
+                    changeConsoleColor(COLOR_GREEN);
+                    print("%c",currentSequence.data[k]);
+            }
+        }
+        //not test
+        if (currentSequence.Type == DELETE) {
+            changeConsoleColor(COLOR_RED);
+            for (int j = currentSequence.end.x; j < nextSequence.start.x; ++j) {
+                changeConsoleColor(COLOR_LIGHT_BLUE);
+                print("%c",oldString[j]);
+            }
+        }
+
+        long diffX = nextSequence.start.x - currentSequence.end.x;
+        long diffY = nextSequence.start.y - currentSequence.end.y;
+        if (diffX == diffY) {
+            for (int j = currentSequence.end.x; j < nextSequence.start.x; ++j) {
+                changeConsoleColor(COLOR_LIGHT_BLUE);
+                print("%c",oldString[j]);
+            }
+            continue;
+        }
+        changeConsoleColor(COLOR_WHITE);
+    }
+//    fclose(file);
 }
 
 /**

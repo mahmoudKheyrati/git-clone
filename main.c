@@ -94,9 +94,9 @@ int main(int argc, String *argv) {
 //    return 0;
     String *ar = malloc(sizeof(String *) * 10);
     ar[0] = "git";
-    ar[1] = "reset";
-    ar[2] = "f9a789f9eeec3f54de71cf42790675a6.CMT";
-    ar[3] = "desription";
+    ar[1] = "diff";
+    ar[2] = "b83ad67c0c443724cbed2ab80850a545.CMT";
+    ar[3] = "add.txt";
 //    ar[2] = ".\\test\\addedNewFile.txt";
 //    print("%i \n%i\n",isFolderExist("./dbs/selected"), isFolderExist(".\\dbs\\selected"));
 //    String source = ".";
@@ -106,8 +106,8 @@ int main(int argc, String *argv) {
 //    fileCopy(".\\test", ".\\path", "old.txt");
 //    chooseColor();
 //    print("%s\n",SINGLE_HASH_FILE_ADDRESS);
-//    runCli(4,ar);
-    runCli(argc, argv);
+    runCli(4,ar);
+//    runCli(argc, argv);
 //    trackFilesExample();
     return 0;
 }

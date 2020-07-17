@@ -11,7 +11,7 @@ struct Point {
     long x, y;
 };
 struct DifferenceSequence {
-    short int Type;
+    int Type;
     struct Point start;
     struct Point end;
     char data[9999];
