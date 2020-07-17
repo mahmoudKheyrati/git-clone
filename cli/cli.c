@@ -280,22 +280,31 @@ void commitCli(String title, String description) {
         print("after saving differences \n");
         // filling file entry
         //set status
-
+        printColored("editlist len : ", COLOR_GREEN);
+        print("%li\n", editList->length);
         for (int j = 0; j < editList->length; ++j) {
             if (strcmp(editList->items[i].fileAddress, fileSelectEntry.fileAddress) == 0) {
+                printColored("* status ",COLOR_YELLOW);
+                print("%s %i  ", editList->items[i].fileAddress , editList->items[i].status);
+
                 switch (editList->items[i].status) {
                     case FILE_ADDED:
+                        print("add");
                         fileEntry.status = ADD_NEW_FILE;
                         break;
                     case FILE_EDITED:
+                        print("edit");
                         fileEntry.status = CHANGED_FILE;
                         break;
                     case FILE_REMOVED:
+                        print("remove");
                         fileEntry.status = REMOVED_FILE;
                         break;
                     case FILE_NO_CHANGE:
+                        print("no change ");
                         break;
                 }
+                print("\n");
 
                 //bug rises here
 //                fileEntry.status = editList->items[i].status;
@@ -303,7 +312,7 @@ void commitCli(String title, String description) {
             }
         }
         print("after set status\n");
-
+        fileEntry.status= CHANGED_FILE;
         strcpy(fileEntry.id, objectFilename);
         strcpy(fileEntry.fileAddress, fileSelectEntry.fileAddress);
 
@@ -457,12 +466,16 @@ void resetCli(String commitId) {
 
             } else if (commitFileEntry.status == REMOVED_FILE) {
                 //remove file
+                printColored("removed : ",COLOR_RED);
+                print("%s \n",commitFileEntry.fileAddress);
                 deleteFile2(commitFileEntry.fileAddress);
             }
         }
         deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
 
     }
+//    deepCopy(PREV_STATE_PATH, ".", ROOT_FOLDER_NAME);
+
 }
 
 void stashCli(String commitId) {
