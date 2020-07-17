@@ -13,6 +13,7 @@ String * getIgnoredList(int * n){
         String line = malloc(MAX_LINE_SIZE);
         line[0]='\0';
         fgets(line,MAX_LINE_SIZE, file);
+        line[strlen(line)-1]='\0';
         list[j]= line;
     }
     *n= size;
@@ -44,6 +45,7 @@ String *getAllFilesInRoot(int *n) {
         // ignore .ignore files / folders
         int isContinue = 0 ;
         for (int i = 0; i < ignoredCount; ++i) {
+//            print("ignored line : %s\n", ignoredList[i]);
             if(strstr(line,ignoredList[i])!=NULL){
                 // continue outer loop
                 isContinue= 1;
@@ -59,49 +61,6 @@ String *getAllFilesInRoot(int *n) {
     *n = index;
     fclose(file);
     return result;
-}
-
-String *getFilesList(String path, int *size) {
-    String *list = malloc(100 * sizeof(String));
-    int index = 0;
-
-    int folderCount = 0;
-    String *folders = getFoldersInDirectory(path, &folderCount);
-    folders[index++] = "./test/old.txt";
-    folders[index++] = "./test/new.txt";
-    folders[index++] = "./test/myChanges.txt";
-    folders[index++] = "./test/addedNewFile.txt";
-    *size = 4;
-    return folders;
-//    if(folderCount==2) return;
-    for (int i = 2; i < folderCount; ++i) {
-//        print("%s\n",folders[i]);
-//        print("\t");
-        String newPath = malloc(1000);
-        sprintf(newPath, "%s/%s", path, folders[i]);
-//        print("%s\n",newPath);
-//        test(newPath);
-        int filesCount = 0;
-        String *files = getFilesInDirectory(folders[i], &filesCount);
-        for (int j = 0; j < filesCount; ++j) {
-            String tmp = malloc(100);
-            sprintf(tmp, "%s/%s", folders[i], files[j]);
-            list[index++] = tmp;
-//            print("\t%-30s\t\t",files[j]);
-//            print("%s\n",getLastModifiedOfFile(folders[i],files[j]));
-        }
-    }
-//    print("--------------\n");
-//    int filesCount = 0 ;
-//    String * files = getFilesInDirectory(".",&filesCount );
-//    for (int i = 0; i < filesCount; ++i) {
-//        String tmp = malloc(100);
-//        sprintf(tmp,"%s/%s","./",files[i]);
-//        list[index++]= tmp;
-//        print("%s\n",files[i]);
-//    }
-    *size = index;
-    return list;
 }
 
 struct LastEditList *getChangedFiles() {
@@ -151,7 +110,7 @@ struct LastEditList *getChangedFiles() {
             }
         } else {
 //            print("add new file :\t %s \n", filesList[j]);
-            currentEditList->items[index].status = ADD_NEW_FILE;
+            currentEditList->items[index].status = FILE_ADDED;
             struct FileEditEntry entry = {.status=FILE_ADDED};
             strcpy(entry.fileAddress, filesList[j]);
             strcpy(entry.lastEdit, getLastModifiedOfFile2(filesList[j]));

@@ -1,6 +1,5 @@
 #include "cli.h"
 
-#define SELECT_DB_NAME "SELECTED.DB"
 
 void initCli();
 
@@ -104,7 +103,7 @@ void statusCli() {
     print("selected files : \n");
     struct SelectedList *selectedList = malloc(sizeof(struct SelectedList));
     initSelectedList(selectedList, 20);
-    selectedList = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
+    selectedList = getSelectedList(DB_SELECTED_FILE_PATH, DB_SELECTED_FILENAME);
     for (int j = 0; j < selectedList->length; ++j) {
         if (selectedList->items[j].isSelect == True) {
             print("\t\t\t");
@@ -149,7 +148,7 @@ void selectCli(String filename) {
         free(command);
     }
 
-    list = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
+    list = getSelectedList(DB_SELECTED_FILE_PATH, DB_SELECTED_FILENAME);
     int isFind = 0;
     for (int i = 0; i < list->length; ++i) {
         if (strcmp(list->items[i].fileAddress, filename) == 0) {
@@ -169,7 +168,7 @@ void selectCli(String filename) {
         addSelectFileEntry(list, entry);
         print("selected :\t\t%s\n", entry.fileAddress);
     }
-    saveSelectList(list, DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
+    saveSelectList(list, DB_SELECTED_FILE_PATH, DB_SELECTED_FILENAME);
 
 }
 
@@ -182,14 +181,14 @@ void unSelectCli(String filename) {
         system(command);
         free(command);
     }
-    list = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
+    list = getSelectedList(DB_SELECTED_FILE_PATH, DB_SELECTED_FILENAME);
     int isFind = 0;
     int index = 0;
     for (int i = 0; i < list->length; ++i) {
         struct FileSelectEntry current = list->items[i];
         if (strcmp(current.fileAddress, filename) == 0) {
             list->items[i].isSelect = False;
-            saveSelectList(list, DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
+            saveSelectList(list, DB_SELECTED_FILE_PATH, DB_SELECTED_FILENAME);
             isFind = 1;
             index = i;
             break;
@@ -205,11 +204,14 @@ void unSelectCli(String filename) {
 void commitCli(String title, String description) {
     struct SelectedList *selectedList = malloc(sizeof(struct SelectedList));
     initSelectedList(selectedList, 20);
-    selectedList = getSelectedList(DB_SELECTED_FILE_PATH, SELECT_DB_NAME);
+    selectedList = getSelectedList(DB_SELECTED_FILE_PATH, DB_SELECTED_FILENAME);
 
     if (selectedList->length == 0) {
         printColored("there is nothing to commit please select file(s) first \n", COLOR_RED);
         return;
+    }
+    for (int l = 0; l < selectedList->length; ++l) {
+        print("select to com : %s\n ",selectedList->items[l].fileAddress);
     }
 
     struct CommitList *commitList = malloc(sizeof(struct CommitList));
@@ -222,8 +224,8 @@ void commitCli(String title, String description) {
 
     struct LastEditList *editList = malloc(sizeof(struct LastEditList));
     initLastEditList(editList, 20);
-    editList = getLastEditList(DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
-//    editList = getChangedFiles();
+//    editList = getLastEditList(".\\.JIT\\DBS\\LAST_EDIT", "LAST_EDIT.db");
+    editList = getChangedFiles();
 
     // commit selected files
     // for storing all file hashes to create commit hashcode
@@ -250,29 +252,33 @@ void commitCli(String title, String description) {
         hashCode[strlen(hashCode) - 1] = '\0';
         //delete tmp file
         deleteFile2("hash.hash");
+        print("after clear hash.hsh\n");
 
 
         // create new object for changed file and store it
         String prevPath = malloc(1000 * sizeof(char));
-        sprintf(prevPath, "%s\\%s", PREV_STATE_PATH, fileSelectEntry.fileAddress);
-
+        sprintf(prevPath, "%s\\%s", ".\\.JIT\\PREV_STATE", fileSelectEntry.fileAddress);
+        print("prev path %s\n", prevPath);
         // determine changes
         String A = readFile2(prevPath);
         String B = readFile2(fileSelectEntry.fileAddress);
+        print("after read files\n");
+
 
         long int lenA = strlen(A);
         long int lenB = strlen(B);
 
 
         int **lookupTable = createLookupTable(A, B);
+        print("after lookup table ");
         struct DifferenceList *differenceList = parsLookUpTable(lookupTable, A, B, lenA, lenB);
-
+        print("after didd list \n");
         struct DifferenceList *list = differenceList;
         struct DifferenceList *list2 = StringDiffChecker(A, B);
         String objectFilename = malloc(70 * sizeof(char));
         sprintf(objectFilename, "%s.OBJ", hashCode);
         diffSaver(list, OBJECTS_FOLDER_PATH, objectFilename);
-
+        print("after saving differences \n");
         // filling file entry
         //set status
 
@@ -282,6 +288,7 @@ void commitCli(String title, String description) {
                 break;
             }
         }
+        print("after set status\n");
 
         strcpy(fileEntry.id, objectFilename);
         strcpy(fileEntry.fileAddress, fileSelectEntry.fileAddress);
@@ -296,6 +303,39 @@ void commitCli(String title, String description) {
         // write all hashed for generate commit hashcode
         fprintf(allHashes, "%s", hashCode);
 //        free(hashCode);
+
+
+        // update prev state
+        String fileAddressInPrevState = malloc(sizeof(char) * 300);
+        print("edit list len: %li\n", editList->length);
+        for (int k = 0; k < editList->length; ++k) {
+            struct FileEditEntry entry = editList->items[k];
+            if(strcmp(selectedList->items[i].fileAddress,entry.fileAddress)!=0) continue;
+            sprintf(fileAddressInPrevState, "%s\\%s", PREV_STATE_PATH, entry.fileAddress);
+            print("%i ) %s \n", k , fileAddressInPrevState);
+            if (entry.status == FILE_EDITED || entry.status == FILE_ADDED) {
+                // copy new file insted
+                print("entry . file add : %s \n ", entry.fileAddress);
+                print("copy : from : %s\n", extractFilePathWithFileAddress(entry.fileAddress));
+                print("copy : to : %s\n", extractFilePathWithFileAddress(fileAddressInPrevState));
+                print("copy : name : %s\n",extractFileNameWithFileAddress(entry.fileAddress));
+
+
+                fileCopy(extractFilePathWithFileAddress(entry.fileAddress),
+                         extractFilePathWithFileAddress(fileAddressInPrevState),
+                         extractFileNameWithFileAddress(entry.fileAddress));
+                editList->items[k].status = FILE_NO_CHANGE;
+
+            } else if (entry.status == FILE_REMOVED) {
+                // i don't know
+                editList->items[k].status = FILE_REMOVED;
+                deleteFile2(fileAddressInPrevState);
+            }
+        }
+        free(fileAddressInPrevState);
+        print("after update prevstate\n");
+
+
     }
     fclose(allHashes);
     // create commit hashCode
@@ -305,6 +345,7 @@ void commitCli(String title, String description) {
     sprintf(commitFilename, "%s.CMT", commitHashCode);
     //saving commit
     saveCommitList(commitList, DB_COMMITS_PATH, commitFilename);
+    print("after saving commit \n");
     //add to log list
 
     struct LogEntry logEntry = {};
@@ -312,35 +353,19 @@ void commitCli(String title, String description) {
     strcpy(logEntry.id, commitFilename);
     strcpy(logEntry.title, title);
     strcpy(logEntry.date, description);
-//    logEntry.title = "title";
-//    logEntry.description = "des";
-//    logEntry.id = commitFilename;
+
+
     addLogEntry(logList, logEntry);
     saveLogList(logList, DB_LOG_PATH, DB_LOG_DB_NAME);
+    print("after save to log lise \n");
 
-    // update prev state
-    String fileAddressInPrevState = malloc(sizeof(char) * 300);
 
-    for (int k = 0; k < editList->length; ++k) {
-        struct FileEditEntry entry = editList->items[k];
-
-        sprintf(fileAddressInPrevState, "%s//%s", PREV_STATE_PATH, entry.fileAddress);
-        if (entry.status == FILE_EDITED || entry.status == FILE_ADDED) {
-            // copy new file insted
-            fileCopy(extractFilePathWithFileAddress(entry.fileAddress),
-                     extractFilePathWithFileAddress(fileAddressInPrevState),
-                     extractFileNameWithFileAddress(entry.fileAddress));
-
-        } else if (entry.status == FILE_REMOVED) {
-            // i don't know
-            deleteFile2(fileAddressInPrevState);
-        }
-    }
-    free(fileAddressInPrevState);
     // empty selected list
     clearSelectedDb();
+    print("after clear selected db\n");
     // save edit list
     saveEditList(editList, DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
+    print("after savign edit list \n");
 }
 
 void logCli() {

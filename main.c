@@ -54,13 +54,15 @@ int main(int argc, String *argv) {
 //    for (int i = 0; i < list->length; ++i) {
 //        if (list->items[i].status == FILE_REMOVED) {
 //            print("\t\t\t\tdeleted : %s\n", list->items[i].fileAddress);
+//            list->items[i].status=FILE_NO_CHANGE;
+//
 //        }
 //    }
 //
-////
+//////
 //    saveEditList(list,".\\.JIT\\DBS\\LAST_EDIT", "LAST_EDIT.db");
-////
-////
+//////
+//////
 //    return 0;
 
 
@@ -87,7 +89,7 @@ int main(int argc, String *argv) {
 //    return 0;
     String *ar = malloc(sizeof(String *) * 10);
     ar[0] = "git";
-    ar[1] = "status";
+    ar[1] = "commit";
     ar[2] = "title";
     ar[3] = "desription";
 //    ar[2] = ".\\test\\addedNewFile.txt";

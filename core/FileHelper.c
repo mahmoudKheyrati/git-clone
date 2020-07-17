@@ -342,22 +342,26 @@ String extractFileNameWithFileAddress(String fileAddress){
             break;
         }
     }
-    return fileAddress+index+1;
+    return fileAddress+index;
 }
 
 String extractFilePathWithFileAddress(String fileAddress){
     int len = strlen(fileAddress);
 
     int index = 0;
+    int count = 0 ;
     for (int i = len - 1; i >= 0; --i) {
         if (fileAddress[i] == '\\' || fileAddress[i] == '/') {
             index = i;
+            count++;
             break;
         }
     }
+    if(count==False)
+        return ".";
     String path = malloc(sizeof(char)* len);
     strcpy(path , fileAddress);
-    path[index+1]='\0';
+    path[index]='\0';
     return path;
 }
 
