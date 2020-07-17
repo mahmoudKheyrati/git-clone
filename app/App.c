@@ -1,9 +1,27 @@
 #include "App.h"
+String * getIgnoredList(int * n){
+    String rawText = readFile2(IGNORED_FILE_ADDRESS);
+    int rawLen = strlen(rawText);
+    int size = 0 ;
+    for (int i = 0; i < rawLen; ++i) {
+        if(rawText[i]=='\n') size++;
+    }
+    FILE * file = fopen(IGNORED_FILE_ADDRESS , "r+");
 
+    String *list = malloc(sizeof(String)* size);
+    for (int j = 0; j < size ; ++j) {
+        String line = malloc(MAX_LINE_SIZE);
+        line[0]='\0';
+        fgets(line,MAX_LINE_SIZE, file);
+        list[j]= line;
+    }
+    *n= size;
+    return list;
+}
 String *getAllFilesInRoot(int *n) {
     int skipToGetRelativePath = strlen(readFile2(CURRENT_PATH_FILE_ADDRESS));
-    system("dir /s /b /o:gn /a-d > junki.junki.out.some.tmp");
-    String wholeString = readFile("./", "junki.junki.out.some.tmp");
+    system("dir /s /b /o:gn /a-d > .\\.JIT\\allfiles.tmp");
+    String wholeString = readFile("./", ".\\.JIT\\allfiles.tmp");
     long int len = strlen(wholeString);
     long int count = 0;
     for (long int i = 0; i < len; ++i) {
@@ -11,15 +29,27 @@ String *getAllFilesInRoot(int *n) {
             count++;
         }
     }
+    int ignoredCount = 0 ;
+    String * ignoredList = getIgnoredList(&ignoredCount);
     free(wholeString);
-    FILE * file = fopen("junki.junki.out.some.tmp","r+");
+    FILE * file = fopen(".\\.JIT\\allfiles.tmp","r+");
     String *result = malloc(sizeof(String *) * (count + 1));
     long int index = 0;
     for (long int j = 0; j < count ; ++j) {
         String line = malloc(MAX_LINE_SIZE);
         line[0]='\0';
         fgets(line,MAX_LINE_SIZE, file);
+        // ignore .JIT files
         if(strstr(line,"\\.JIT\\")!=NULL) continue;
+        // ignore .ignore files / folders
+        int isContinue = 0 ;
+        for (int i = 0; i < ignoredCount; ++i) {
+            if(strstr(line,ignoredList[i])!=NULL){
+                // continue outer loop
+                isContinue= 1;
+            }
+        }
+        if(isContinue) continue;
         line[strlen(line)-1]='\0';
         line+=skipToGetRelativePath;
         result[index++] = line;

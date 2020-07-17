@@ -160,6 +160,10 @@ void selectCli(String filename) {
     if (isFind == True) {
         print("this file is already selected\n");
     } else {
+        if(isFileExist2(filename)==False){
+            printColored("this file dosn't exists. please enter the correct file\n", COLOR_RED);
+            return;
+        }
         struct FileSelectEntry entry = {.isSelect=True};
         strcpy(entry.fileAddress, filename);
         addSelectFileEntry(list, entry);
@@ -219,6 +223,7 @@ void commitCli(String title, String description) {
     struct LastEditList *editList = malloc(sizeof(struct LastEditList));
     initLastEditList(editList, 20);
     editList = getLastEditList(DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
+//    editList = getChangedFiles();
 
     // commit selected files
     // for storing all file hashes to create commit hashcode
