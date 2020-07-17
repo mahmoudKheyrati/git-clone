@@ -11,7 +11,7 @@ enum FileLastEditStatus {
 struct FileEditEntry {
     char fileAddress[MAX_FILE_ENTRY_ITEM_LEN];
     char lastEdit[MAX_FILE_ENTRY_ITEM_LEN];
-    short int status;
+    int status;
 };
 
 struct LastEditList {

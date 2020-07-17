@@ -36,11 +36,12 @@ void saveLogList(struct LogList* list, String path, String filename){
 }
 
 struct LogList* getLogList(String path, String filename){
+    int size = 0 ;
     struct LogList *list= malloc(sizeof(struct LogList));
-    initLogList(list,20);
     String fileAddress = fileAddressMaker(path, filename);
     FILE * file = fopen(fileAddress,"rb");
-    fread(&list->size,1 , sizeof( int),file);
+    fread(&size,1 , sizeof( int),file);
+    initLogList(list,size?size:20);
     fread(&list->length,1 , sizeof( int),file);
 //    print("%i , %i\n", list->size, list->length);
 

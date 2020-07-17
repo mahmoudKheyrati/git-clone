@@ -36,11 +36,12 @@ void saveCommitList(struct CommitList* list, String path, String filename){
 }
 
 struct CommitList* getCommitList(String path, String filename){
+    int size = 0 ;
     struct CommitList *list= malloc(sizeof(struct CommitList));
-    initCommitList(list,20);
     String fileAddress = fileAddressMaker(path, filename);
     FILE * file = fopen(fileAddress,"rb");
-    fread(&list->size,1 , sizeof( int),file);
+    fread(&size,1 , sizeof( int),file);
+    initCommitList(list,size?size:20);
     fread(&list->length,1 , sizeof( int),file);
 //    print("%i , %i\n", list->size, list->length);
 

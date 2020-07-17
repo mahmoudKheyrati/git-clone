@@ -4,23 +4,64 @@
 #include "examples/color.h"
 #include "examples/dbs/LogDbExample.h"
 int main(int argc, String *argv) {
-//    struct LogEntry logEntry = {};
-//    strcpy(logEntry.date, getDate());
-//    strcpy(logEntry.id, "commitFilename");
-//    strcpy(logEntry.title, "title");
-//    strcpy(logEntry.date, "description");
-//    struct LogList *logList = malloc(sizeof(struct LogList));
-//    initLogList(logList,20);
-//    addLogEntry(logList,logEntry);
-//    saveLogList(logList,DB_LOG_PATH,DB_LOG_DB_NAME);
-//    initLogList(logList,20);
-//    logList = getLogList(DB_LOG_PATH,DB_LOG_DB_NAME);
-//    print("len : %i\n", logList->length);
-//    for (int i = 0; i < logList->length; ++i) {
-//        print("%s %s %s %s",logList->items[i].id,logList->items[i].title,logList->items[i].description,logList->items[i].date);
+//    struct LastEditList *currentList = malloc(sizeof(struct LastEditList));
+//    initLastEditList(currentList,20);
+//    currentList= getLastEditList(".\\.JIT\\DBS\\LAST_EDIT", "LAST_EDIT.db");
+//    print("len : %li\n", currentList->length);
+//    for (int i = 0; i < currentList->length; ++i) {
+//        print("%s\n",currentList->items[i].fileAddress);
+//    }
+//    // fill the list
+//    //get files
+//    int filesSize = 0 ;
+//    String * files = getAllFilesInRoot(&filesSize);
+//    print("files size : %i\n",filesSize);
+//    for (int j = 0; j < filesSize; ++j) {
+//        print("files : %s\n", files[j]);
+//        struct FileEditEntry entry = {.status=FILE_ADDED};
+//        strcpy(entry.fileAddress, files[j]);
+//        strcpy(entry.lastEdit, getLastModifiedOfFile2(files[j]));
+//        print("\t%s - %s - %i \n",entry.fileAddress,entry.lastEdit, entry.status);
+//        addLastEditEntry(currentList,entry);
+//    }
+//    print("\n\n\n****after listing files\n\n\n");
+//    saveEditList(currentList,".\\.JIT\\DBS\\LAST_EDIT", "LAST_EDIT.db" );
+//    print("after saving \n\n");
+//    struct LastEditList * afterList = malloc(sizeof(struct LastEditList));
+//    initLastEditList(afterList,20);
+//    afterList = getLastEditList(".\\.JIT\\DBS\\LAST_EDIT", "LAST_EDIT.db");
+//    print("-- len : %li\n", afterList->length);
+//    for (int i = 0; i < afterList->length; ++i) {
+//        print("--- ) %s\n",afterList->items[i].fileAddress);
 //    }
 
+    struct LastEditList *list = getChangedFiles();
+    print("after get list \n");
+    printColored("\n\n\tmodified files : \n", COLOR_LIGHT_BLUE);
+    for (int i = 0; i < list->length; ++i) {
+        if (list->items[i].status == FILE_EDITED) {
+            print("\t\t\t\tedited : %s\n", list->items[i].fileAddress);
+        }
+    }
+    printColored("\n\n\tnew files : \n", COLOR_GREEN);
+    for (int i = 0; i < list->length; ++i) {
+        if (list->items[i].status == FILE_ADDED) {
+            print("\t\t\t\tadded : %s\n", list->items[i].fileAddress);
+            list->items[i].status=FILE_NO_CHANGE;
+        }
+    }
+    printColored("\n\n\tdeleted files : \n", COLOR_RED);
+    for (int i = 0; i < list->length; ++i) {
+        if (list->items[i].status == FILE_REMOVED) {
+            print("\t\t\t\tdeleted : %s\n", list->items[i].fileAddress);
+        }
+    }
 
+//
+    saveEditList(list,".\\.JIT\\DBS\\LAST_EDIT", "LAST_EDIT.db");
+//
+//
+    return 0;
 
 
 

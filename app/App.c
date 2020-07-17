@@ -19,6 +19,7 @@ String *getAllFilesInRoot(int *n) {
         String line = malloc(MAX_LINE_SIZE);
         line[0]='\0';
         fgets(line,MAX_LINE_SIZE, file);
+        if(strstr(line,"\\.JIT\\")!=NULL) continue;
         line[strlen(line)-1]='\0';
         line+=skipToGetRelativePath;
         result[index++] = line;
@@ -76,7 +77,9 @@ String *getFilesList(String path, int *size) {
 struct LastEditList *getChangedFiles() {
 
     //read from db
-    struct LastEditList *currentEditList = getLastEditList("./dbs/lastEditDb", "editDb.txt");
+    struct LastEditList *currentEditList = malloc(sizeof(struct LastEditList));
+    initLastEditList(currentEditList,20);
+    currentEditList = getLastEditList(".\\.JIT\\DBS\\LAST_EDIT", "LAST_EDIT.db");
 
     int filesListSize = 0;
     String *filesList = getAllFilesInRoot(&filesListSize);
@@ -99,6 +102,7 @@ struct LastEditList *getChangedFiles() {
                 break;
             }
         }
+
         if (isFind) {
             //find already exists in the last commits
             if (strcmp(currentEditList->items[index].lastEdit, getLastModifiedOfFile2(filesList[j])) == 0) {

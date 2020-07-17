@@ -135,7 +135,7 @@ void statusCli() {
     }
 
 
-//        saveEditList(list,"./dbs/lastEditDb", "editDb.txt");
+//        saveEditList(list,DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
 
 }
 
