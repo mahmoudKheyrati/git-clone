@@ -21,6 +21,8 @@ void stashPopCli();
 
 void help();
 
+void getCommitDetailCli(String commitId);
+
 void runCli(int argc, String *argv) {
     String mainCommand = argv[1];
 //    print("%s\n", mainCommand);
@@ -47,6 +49,8 @@ void runCli(int argc, String *argv) {
         } else {
             stashCli(argv[2]);
         }
+    } else if(strcmp(mainCommand,"detail")==0){
+            getCommitDetailCli(argv[2]);
     } else {
         // anything else , use need help
         help();
@@ -482,7 +486,7 @@ void stashCli(String commitId) {
     deepCopy(".", ".\\.JIT\\STASH", ROOT_FOLDER_NAME);
     writeFile(".\\.JIT\\", "IN_STASH.TMP", "1");
     // reset
-//    resetCli(commitId);
+    resetCli(commitId);
 
 }
 
@@ -548,6 +552,58 @@ void help() {
 
 }
 
+
+void getCommitDetailCli(String commitId){
+    struct LogList *logList = malloc(sizeof(struct LogList));
+    initLogList(logList, 20);
+    logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
+    int isFind = 0;
+    int index = 0;
+    for (int i = 0; i < logList->length; ++i) {
+        struct LogEntry entry = logList->items[i];
+        if (strcmp(entry.id, commitId) == 0) {
+//            print("find commit id\n");
+            isFind = 1;
+            index = i;
+        }
+
+    }
+    if (isFind == False) {
+        printColored("there isn't such commit id please enter the correct one!\n", COLOR_RED);
+        return;
+    }
+    struct LogEntry logEntry = logList->items[index];
+    struct CommitList *commitList = malloc(sizeof(struct CommitList));
+    initCommitList(commitList, 20);
+    commitList = getCommitList(DB_COMMITS_PATH, logEntry.id);
+    printColored("file name                       ",COLOR_BLOCK_WHITE);
+    printColored("date                      ",COLOR_BLOCK_WHITE);
+    printColored("\t\tmode                           \n",COLOR_BLOCK_WHITE);
+
+    for (int j = 0; j < commitList->length; ++j) {
+        struct CommitFileEntry commitFileEntry = commitList->items[j];
+        changeConsoleColor(COLOR_YELLOW);
+        print("%-30s\t%-35s",commitFileEntry.fileAddress, commitFileEntry.date);
+        switch (commitFileEntry.status){
+            case REMOVED_FILE:
+                printColored("\tremoved",COLOR_RED);
+                break;
+            case CHANGED_FILE:
+                printColored("\tmodified",COLOR_LIGHT_BLUE);
+                break;
+            case ADD_NEW_FILE:
+                printColored("\tadd",COLOR_GREEN);
+                break;
+        }
+        print("\n");
+
+    }
+
+}
+
+void diffCli(){
+    
+}
 
 /**
  * Changes cmd font color
