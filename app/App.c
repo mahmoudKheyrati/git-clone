@@ -1,4 +1,9 @@
 #include "App.h"
+/**
+ * get all files and folders listed in jit.ignore file as a list of string
+ * @param n size of given array stored here
+ * @return
+ */
 String * getIgnoredList(int * n){
     String rawText = readFile2(IGNORED_FILE_ADDRESS);
     int rawLen = strlen(rawText);
@@ -19,6 +24,11 @@ String * getIgnoredList(int * n){
     *n= size;
     return list;
 }
+/**
+ * get list of files exclude ignored files and folders
+ * @param n
+ * @return
+ */
 String *getAllFilesInRoot(int *n) {
     int skipToGetRelativePath = strlen(readFile2(CURRENT_PATH_FILE_ADDRESS));
     system("dir /s /b /o:gn /a-d > .\\.JIT\\allfiles.tmp");
@@ -62,7 +72,10 @@ String *getAllFilesInRoot(int *n) {
     fclose(file);
     return result;
 }
-
+/**
+ * determine changing of files
+ * @return
+ */
 struct LastEditList *getChangedFiles() {
 
     //read from db
@@ -72,15 +85,8 @@ struct LastEditList *getChangedFiles() {
 
     int filesListSize = 0;
     String *filesList = getAllFilesInRoot(&filesListSize);
-//    String *filesList = getFilesList(".", &filesListSize);
-    for (int k = 0; k < filesListSize; ++k) {
-//        print("%s\n", filesList[k]);
-    }
-//    return NULL;
-
 
     for (int j = 0; j < filesListSize; ++j) {
-//        print("we %s\n",filesList[j]);
         int isFind = 0;
         int index = 0;
         for (int i = 0; i < currentEditList->length; ++i) {
@@ -123,7 +129,16 @@ struct LastEditList *getChangedFiles() {
     return currentEditList;
 
 }
-
+/**
+ * track files and get status
+ * @param edited
+ * @param added
+ * @param deleted
+ * @param editSize
+ * @param addSize
+ * @param deleteSize
+ * @return
+ */
 struct LastEditList *
 trackFiles(String *edited, String *added, String *deleted, int *editSize, int *addSize, int *deleteSize) {
     int eSize = 0;

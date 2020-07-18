@@ -44,11 +44,7 @@
 #define SINGLE_HASH_FILE_ADDRESS SINGLE_HASH_FILE_PATH"hash.tmp"
 
 
-
 #define IGNORED_FILE_ADDRESS "jit.ignore"
-
-
-
 
 
 struct ConfigDbAddress {
@@ -68,5 +64,7 @@ struct ConfigDbEntry {
 struct ConfigDbEntry *configDatabase;
 
 enum Boolean loadConfigDatabase(String path, String filename);
+
 enum Boolean saveConfigDatabase(String path, String filename);
-enum Boolean saveCustomConfigDatabase(struct ConfigDbEntry* entry, String path, String filename);
+
+enum Boolean saveCustomConfigDatabase(struct ConfigDbEntry *entry, String path, String filename);

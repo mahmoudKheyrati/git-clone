@@ -1,29 +1,6 @@
 #include "cli.h"
 
 
-void initCli();
-
-void statusCli();
-
-void selectCli(String filename);
-
-void unSelectCli(String filename);
-
-void commitCli(String title, String description);
-
-void logCli();
-
-void resetCli(String commitId);
-
-void stashCli(String commitId);
-
-void stashPopCli();
-
-void help();
-
-void getCommitDetailCli(String commitId);
-
-void diffViewerCli(String commitId, String filename);
 
 void runCli(int argc, String *argv) {
     String mainCommand = argv[1];

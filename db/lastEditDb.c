@@ -14,7 +14,7 @@ void expandLastEditList(struct LastEditList *list) {
     }
     free(list->items);
     list->items = items;
-    list->size*=2;
+    list->size *= 2;
 }
 
 void addLastEditEntry(struct LastEditList *list, struct FileEditEntry item) {
@@ -24,36 +24,31 @@ void addLastEditEntry(struct LastEditList *list, struct FileEditEntry item) {
     list->items[list->length++] = item;
 }
 
-void saveEditList(struct LastEditList* list, String path, String filename){
+void saveEditList(struct LastEditList *list, String path, String filename) {
     String fileAddress = fileAddressMaker(path, filename);
-    FILE* file = fopen(fileAddress, "wb");
-    fwrite(&list->size,1 , sizeof( int),file);
-    fwrite(&list->length,1 , sizeof( int),file);
-    fwrite(list->items,list->length, sizeof(struct FileEditEntry),file);
+    FILE *file = fopen(fileAddress, "wb");
+    fwrite(&list->size, 1, sizeof(int), file);
+    fwrite(&list->length, 1, sizeof(int), file);
+    fwrite(list->items, list->length, sizeof(struct FileEditEntry), file);
     fclose(file);
 
 }
 
-struct LastEditList* getLastEditList(String path, String filename){
-    int size= 0 ;
-    struct LastEditList *list= malloc(sizeof(struct LastEditList));
+struct LastEditList *getLastEditList(String path, String filename) {
+    int size = 0;
+    struct LastEditList *list = malloc(sizeof(struct LastEditList));
     String fileAddress = fileAddressMaker(path, filename);
-    FILE * file = fopen(fileAddress,"rb");
-    fread(&size,1 , sizeof( int),file);
-    initLastEditList(list,size?size:20);
-    fread(&list->length,1 , sizeof( int),file);
-//    print("%i , %i\n", list->size, list->length);
-
-//    struct FileEditEntry entry;
-//    fread(&entry,1, sizeof(struct FileEditEntry), file);
-//    print("single item %s\n", entry.fileAddress);
-
-    fread(list->items,list->length, sizeof(struct FileEditEntry),file);
+    FILE *file = fopen(fileAddress, "rb");
+    fread(&size, 1, sizeof(int), file);
+    initLastEditList(list, size ? size : 20);
+    fread(&list->length, 1, sizeof(int), file);
+    fread(list->items, list->length, sizeof(struct FileEditEntry), file);
     fclose(file);
 
     return list;
 }
-void clearLastEditDb(){
-    deleteFile(DB_LAST_EDIT_PATH,DB_LAST_EDIT_DB_NAME);
+
+void clearLastEditDb() {
+    deleteFile(DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
 }
 

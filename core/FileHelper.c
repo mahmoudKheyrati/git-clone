@@ -45,7 +45,13 @@ String readFile2(String fileAddress) {
     return result;
 
 }
-
+/**
+ * return string lines in array of string
+ * @param path
+ * @param filename
+ * @param n
+ * @return
+ */
 String * readLines(String path, String filename, int * n ) {
     String fileAddress = fileAddressMaker(path, filename);
 
@@ -296,7 +302,11 @@ enum Boolean deleteFile(String filePath, String filename) {
     int res = remove(fileAddress);
     return res ? False : True;
 }
-
+/**
+ * delete given file address
+ * @param fileAddress
+ * @return
+ */
 enum Boolean deleteFile2(String fileAddress) {
     int res = remove(fileAddress);
     return res ? False : True;
@@ -323,7 +333,10 @@ String * splitPath(String path,int* count){
     *count= folderCount+1;
     return result;
 }
-
+/**
+ * you should scape directories with \\ not /
+ * @param path
+ */
 void mkdirs(String path){
     if (isFolderExist(path) == False) {
         String command = malloc(sizeof(char) * 100);

@@ -16,7 +16,13 @@ long int getCurrentTime() {
 //    print("%li\n", tv.tv_sec);
     return tv.tv_sec;
 }
-
+/**
+ * select range in string includes last index
+ * @param string
+ * @param start start index
+ * @param end end index
+ * @return selected range in string
+ */
 String rangeSelect(String string , int start , int end){
     String result = (String)malloc(sizeof(char)*(end-start+1));
     int index = 0 ;
