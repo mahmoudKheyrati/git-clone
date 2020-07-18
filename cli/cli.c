@@ -86,23 +86,22 @@ void initCli() {
         system(command);
         free(command);
 
-        // select all files
-//        struct LastEditList *list = getChangedFiles();
-//        struct SelectedList * selectedList = malloc(sizeof(struct SelectedList));
-//        initSelectedList(selectedList,20);
-//        selectedList = getSelectedList(DB_SELECTED_FILE_PATH, DB_SELECTED_FILENAME);
-//        printColored("\n\n\tmodified files : \n", COLOR_LIGHT_BLUE);
-//        for (int i = 0; i < list->length; ++i) {
-//                list->items[i].status= FILE_ADDED;
-//            struct FileSelectEntry entry = {.isSelect=True};
-//            strcpy(entry.fileAddress, list->items[i].fileAddress);
-//            addSelectFileEntry(selectedList, entry);
-//        }
-//        saveEditList(list,DB_LAST_EDIT_PATH,DB_LAST_EDIT_DB_NAME);
-//        saveSelectList(selectedList,DB_SELECTED_FILE_PATH,DB_SELECTED_FILENAME);
-//
-//
-//        commitCli("init jit", "initialize first commit");
+//         select all files
+        struct LastEditList *list = getChangedFiles();
+        struct SelectedList * selectedList = malloc(sizeof(struct SelectedList));
+        initSelectedList(selectedList,20);
+        selectedList = getSelectedList(DB_SELECTED_FILE_PATH, DB_SELECTED_FILENAME);
+        for (int i = 0; i < list->length; ++i) {
+                list->items[i].status= FILE_ADDED;
+            struct FileSelectEntry entry = {.isSelect=True};
+            strcpy(entry.fileAddress, list->items[i].fileAddress);
+            addSelectFileEntry(selectedList, entry);
+        }
+        saveEditList(list,DB_LAST_EDIT_PATH,DB_LAST_EDIT_DB_NAME);
+        saveSelectList(selectedList,DB_SELECTED_FILE_PATH,DB_SELECTED_FILENAME);
+
+
+        commitCli("init jit", "initialize first commit");
     }
 
 
@@ -175,7 +174,7 @@ void selectCli(String filename) {
         struct FileSelectEntry entry = {.isSelect=True};
         strcpy(entry.fileAddress, filename);
         addSelectFileEntry(list, entry);
-        print("selected :\t\t%s\n", entry.fileAddress);
+//        print("selected :\t\t%s\n", entry.fileAddress);
     }
     saveSelectList(list, DB_SELECTED_FILE_PATH, DB_SELECTED_FILENAME);
 
@@ -219,9 +218,7 @@ void commitCli(String title, String description) {
         printColored("there is nothing to commit please select file(s) first \n", COLOR_RED);
         return;
     }
-    for (int l = 0; l < selectedList->length; ++l) {
-        print("select to com : %s\n ", selectedList->items[l].fileAddress);
-    }
+
 
     struct CommitList *commitList = malloc(sizeof(struct CommitList));
     initCommitList(commitList, 20);
@@ -282,7 +279,6 @@ void commitCli(String title, String description) {
         //set status
         for (int j = 0; j < editList->length; ++j) {
             if (strcmp(editList->items[i].fileAddress, fileSelectEntry.fileAddress) == 0) {
-                printColored("* status ",COLOR_YELLOW);
 
                 switch (editList->items[i].status) {
                     case FILE_ADDED:
@@ -297,7 +293,6 @@ void commitCli(String title, String description) {
                     case FILE_NO_CHANGE:
                         break;
                 }
-                print("\n");
 
                 //bug rises here
 //                fileEntry.status = editList->items[i].status;
@@ -366,7 +361,8 @@ void commitCli(String title, String description) {
     saveEditList(editList, DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
     //update package
     deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
-    printColored("your commit id is : \n", COLOR_GREEN);
+    printColored("\t\tyour commit id is : \n", COLOR_GREEN);
+    print("\t\t\t\t\t%s",logEntry.id);
 
 }
 
@@ -383,7 +379,6 @@ void logCli() {
 }
 
 void resetCli(String commitId) {
-    print("id : %s\n", commitId);
     struct LogList *logList = malloc(sizeof(struct LogList));
     initLogList(logList, 20);
     logList = getLogList(DB_LOG_PATH, DB_LOG_DB_NAME);
@@ -423,7 +418,6 @@ void resetCli(String commitId) {
                 struct DifferenceList *changeList = diffReader(OBJECTS_FOLDER_PATH, commitFileEntry.id);
 
                     String A = readFile2(prevStateAddress);
-                    print("A: %s\n",A);
                     nextSequenceGenerator(A, changeList, path, name);
 
 
@@ -431,13 +425,13 @@ void resetCli(String commitId) {
             } else if (commitFileEntry.status == REMOVED_FILE) {
                 //remove file
                 printColored("removed : ",COLOR_RED);
-                print("%s \n",commitFileEntry.fileAddress);
                 deleteFile2(commitFileEntry.fileAddress);
             }
         }
         deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
 
     }
+    printColored("reset to this commit successfully\n",COLOR_GREEN);
 //    deepCopy(PREV_STATE_PATH, ".", ROOT_FOLDER_NAME);
 
 }
@@ -452,7 +446,6 @@ void stashCli(String commitId) {
 
 void stashPopCli() {
     String result = readFile(".\\.JIT\\", "IN_STASH.TMP");
-    print("%s", result);
 
     if (strcmp(result, "1") == 0) {
 
@@ -609,7 +602,6 @@ String getOldString(String commitId,String filename) {
                 _path=strcat(base,path);
                 _name=strcat(base,name);
                 String A = readFile2(prevStateAddress);
-                print("A: %s\n",A);
                 nextSequenceGenerator(A, changeList, _path, _name);
                 free(_path);
                 free(_name);
@@ -619,7 +611,6 @@ String getOldString(String commitId,String filename) {
             } else if (commitFileEntry.status == REMOVED_FILE) {
                 //remove file
                 printColored("removed : ",COLOR_RED);
-                print("%s \n",commitFileEntry.fileAddress);
                 deleteFile2(commitFileEntry.fileAddress);
             }
         }
@@ -671,7 +662,6 @@ void diffViewerCli(String commitId, String filename){
     }
 
     String oldString = getOldString(logEntry.id,filename);
-//    print("old = %s \n",oldString);
 
     struct DifferenceList* changeList = diffReader(OBJECTS_FOLDER_PATH,commitList->items[fileIndex].id);
 
