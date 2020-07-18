@@ -502,6 +502,14 @@ void help() {
     printColored(" stash pop ", COLOR_BLOCK_BLUE);
     printColored("  -go back to your current workspace without lose any data in stash \n", COLOR_YELLOW);
 
+    printColored(" detail [ commit id ] ", COLOR_BLOCK_BLUE);
+    printColored("  -show what files effects at this commit / date / why \n", COLOR_YELLOW);
+    print("\n");
+
+    printColored(" diff [ commit id ] [ file address ] ", COLOR_BLOCK_BLUE);
+    printColored("  -show changes of this file inside this commit  \n", COLOR_YELLOW);
+    print("\n");
+
 
 }
 
