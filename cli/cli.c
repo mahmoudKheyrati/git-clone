@@ -130,7 +130,7 @@ void statusCli() {
         }
     }
     printColored("\n\n\tnew files : \n", COLOR_GREEN);
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < list->length; ++i) {
         if (list->items[i].status == FILE_ADDED) {
             print("\t\t\t\tadded : %s\n", list->items[i].fileAddress);
         }
@@ -233,11 +233,9 @@ void commitCli(String title, String description) {
 
     struct LastEditList *editList = malloc(sizeof(struct LastEditList));
     initLastEditList(editList, 20);
-//    editList = getLastEditList(".\\.JIT\\DBS\\LAST_EDIT", "LAST_EDIT.db");
     editList = getChangedFiles();
 
     // commit selected files
-    // for storing all file hashes to create commit hashcode
     FILE *allHashes = fopen(ALL_HASHES_FILE_ADDRESS, "w");
 
     // per each file
@@ -246,7 +244,6 @@ void commitCli(String title, String description) {
         if (selectedList->items[i].isSelect == False) continue;
 
         struct FileSelectEntry fileSelectEntry = selectedList->items[i];
-//        print("%s\n", fileSelectEntry.fileAddress);
 
         struct CommitFileEntry fileEntry = {.status=getChangedFileStatus(fileSelectEntry.fileAddress)};
         // write content to get hash code
@@ -261,17 +258,14 @@ void commitCli(String title, String description) {
         hashCode[strlen(hashCode) - 1] = '\0';
         //delete tmp file
         deleteFile2("hash.hash");
-        print("after clear hash.hsh\n");
 
 
         // create new object for changed file and store it
         String prevPath = malloc(1000 * sizeof(char));
         sprintf(prevPath, "%s\\%s", ".\\.JIT\\PREV_STATE", fileSelectEntry.fileAddress);
-        print("prev path %s\n", prevPath);
         // determine changes
         String A = readFile2(prevPath);
         String B = readFile2(fileSelectEntry.fileAddress);
-        print("after read files\n");
 
 
         long int lenA = strlen(A);
@@ -279,38 +273,28 @@ void commitCli(String title, String description) {
 
 
         int **lookupTable = createLookupTable(A, B);
-        print("after lookup table ");
         struct DifferenceList *differenceList = parsLookUpTable(lookupTable, A, B, lenA, lenB);
-        print("after didd list \n");
         struct DifferenceList *list = differenceList;
         String objectFilename = malloc(70 * sizeof(char));
         sprintf(objectFilename, "%s.OBJ", hashCode);
         diffSaver(list, OBJECTS_FOLDER_PATH, objectFilename);
-        print("after saving differences \n");
         // filling file entry
         //set status
-        printColored("editlist len : ", COLOR_GREEN);
-        print("%li\n", editList->length);
         for (int j = 0; j < editList->length; ++j) {
             if (strcmp(editList->items[i].fileAddress, fileSelectEntry.fileAddress) == 0) {
                 printColored("* status ",COLOR_YELLOW);
-                print("%s %i  ", editList->items[i].fileAddress , editList->items[i].status);
 
                 switch (editList->items[i].status) {
                     case FILE_ADDED:
-                        print("add");
                         fileEntry.status = ADD_NEW_FILE;
                         break;
                     case FILE_EDITED:
-                        print("edit");
                         fileEntry.status = CHANGED_FILE;
                         break;
                     case FILE_REMOVED:
-                        print("remove");
                         fileEntry.status = REMOVED_FILE;
                         break;
                     case FILE_NO_CHANGE:
-                        print("no change ");
                         break;
                 }
                 print("\n");
@@ -320,13 +304,10 @@ void commitCli(String title, String description) {
                 break;
             }
         }
-        print("after set status\n");
         fileEntry.status= CHANGED_FILE;
         strcpy(fileEntry.id, objectFilename);
         strcpy(fileEntry.fileAddress, fileSelectEntry.fileAddress);
 
-//        fileEntry.id = objectFilename;
-//        fileEntry.fileAddress = fileSelectEntry.fileAddress;
         strcpy(fileEntry.date, getLastModifiedOfFile2(fileSelectEntry.fileAddress));
 
         addCommitFileEntry(commitList, fileEntry);
@@ -334,24 +315,15 @@ void commitCli(String title, String description) {
 
         // write all hashed for generate commit hashcode
         fprintf(allHashes, "%s", hashCode);
-//        free(hashCode);
-
 
         // update prev state
         String fileAddressInPrevState = malloc(sizeof(char) * 300);
-        print("edit list len: %li\n", editList->length);
         for (int k = 0; k < editList->length; ++k) {
             struct FileEditEntry entry = editList->items[k];
             if (strcmp(selectedList->items[i].fileAddress, entry.fileAddress) != 0) continue;
             sprintf(fileAddressInPrevState, "%s\\%s", PREV_STATE_PATH, entry.fileAddress);
-            print("%i ) %s \n", k, fileAddressInPrevState);
             if (entry.status == FILE_EDITED || entry.status == FILE_ADDED) {
                 // copy new file insted
-                print("entry . file add : %s \n ", entry.fileAddress);
-                print("copy : from : %s\n", extractFilePathWithFileAddress(entry.fileAddress));
-                print("copy : to : %s\n", extractFilePathWithFileAddress(fileAddressInPrevState));
-                print("copy : name : %s\n", extractFileNameWithFileAddress(entry.fileAddress));
-
 
                 fileCopy(extractFilePathWithFileAddress(entry.fileAddress),
                          extractFilePathWithFileAddress(fileAddressInPrevState),
@@ -365,8 +337,6 @@ void commitCli(String title, String description) {
             }
         }
         free(fileAddressInPrevState);
-        print("after update prevstate\n");
-
 
     }
     fclose(allHashes);
@@ -377,7 +347,6 @@ void commitCli(String title, String description) {
     sprintf(commitFilename, "%s.CMT", commitHashCode);
     //saving commit
     saveCommitList(commitList, DB_COMMITS_PATH, commitFilename);
-    print("after saving commit \n");
     //add to log list
 
     struct LogEntry logEntry = {};
@@ -389,16 +358,15 @@ void commitCli(String title, String description) {
 
     addLogEntry(logList, logEntry);
     saveLogList(logList, DB_LOG_PATH, DB_LOG_DB_NAME);
-    print("after save to log lise \n");
 
 
     // empty selected list
     clearSelectedDb();
-    print("after clear selected db\n");
     // save edit list
     saveEditList(editList, DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME);
-    print("after savign edit list \n");
+    //update package
     deepCopy(".", PREV_STATE_PATH, ROOT_FOLDER_NAME);
+
 }
 
 void logCli() {
