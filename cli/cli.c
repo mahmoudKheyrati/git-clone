@@ -4,7 +4,6 @@
 
 void runCli(int argc, String *argv) {
     String mainCommand = argv[1];
-//    print("%s\n", mainCommand);
     if (!mainCommand) return;
     if (strcmp(mainCommand, "init") == 0) {
         initCli();
@@ -478,6 +477,7 @@ void help() {
 
     printColored(" stash pop ", COLOR_BLOCK_BLUE);
     printColored("  -go back to your current workspace without lose any data in stash \n", COLOR_YELLOW);
+    print("\n");
 
     printColored(" detail [ commit id ] ", COLOR_BLOCK_BLUE);
     printColored("  -show what files effects at this commit / date / why \n", COLOR_YELLOW);
