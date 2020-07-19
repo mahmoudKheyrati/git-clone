@@ -31,14 +31,14 @@ struct DifferenceList *
 parser(struct EqualPoint *points, int size, String oldString, String newString, long int maxX, long int maxY) {
     struct DifferenceList *list = malloc(sizeof(struct DifferenceList));
     initList(list, INIT_LIST_SIZE);
-    print("parse size : %i , old : %s , new : %s, maxX : %i , maxY=%i\n",size,oldString,newString,maxX,maxY);
+//    print("parse size : %i , old : %s , new : %s, maxX : %i , maxY=%i\n",size,oldString,newString,maxX,maxY);
     for (int j = 0; j < size; ++j) {
         struct EqualPoint cur = points[j];
-        print("parser : ");
-        print("(%li, %li) -> (%li, %li)\n",cur.startX,cur.startY,cur.endX,cur.endY);
+//        print("parser : ");
+//        print("(%li, %li) -> (%li, %li)\n",cur.startX,cur.startY,cur.endX,cur.endY);
 
     }
-    print("-----------------------\n");
+//    print("-----------------------\n");
 
     if (points[0].startX == 0) {
         //update
@@ -46,7 +46,8 @@ parser(struct EqualPoint *points, int size, String oldString, String newString, 
 //        print("(%i , %i) -> (%i , %i)\n", 0 , 0, points[0].startX, points[0].startY);
         String data = rangeSelect(newString, 0, points[0].startY);
 
-        struct DifferenceSequence sequence = {INSERT, {0, 0}, {points[0].startX, points[0].startY}, .data=data};
+        struct DifferenceSequence sequence = {INSERT, {0, 0}, {points[0].startX, points[0].startY}};
+        strcpy(sequence.data,data);
         add(list, sequence);
 
     } else if (points[0].startY == 0) {
@@ -69,7 +70,8 @@ parser(struct EqualPoint *points, int size, String oldString, String newString, 
             String data = rangeSelect(newString, firstSequence.endY, secondSequence.startY);
 
             struct DifferenceSequence sequence = {INSERT, {firstSequence.endX, firstSequence.endY},
-                                                  {secondSequence.startX, secondSequence.startY}, .data=data};
+                                                  {secondSequence.startX, secondSequence.startY}};
+            strcpy(sequence.data,data);
             add(list, sequence);
 
         } else if (firstSequence.endY == secondSequence.startY) {
@@ -81,6 +83,7 @@ parser(struct EqualPoint *points, int size, String oldString, String newString, 
             add(list, sequence);
         }
     }
+    if(size<=0) return list;
     if (points[size - 1].endX == maxX) {
         //update
 //        print("insert\t");
@@ -88,7 +91,8 @@ parser(struct EqualPoint *points, int size, String oldString, String newString, 
         String data = rangeSelect(newString, points[size - 1].endY, maxY);
 
         struct DifferenceSequence sequence = {INSERT, {points[size - 1].endX, points[size - 1].endY},
-                                              {maxX, maxY}, .data=data};
+                                              {maxX, maxY}};
+        strcpy(sequence.data,data);
         add(list, sequence);
     } else if (points[size - 1].endY == maxY) {
         //delete
@@ -162,7 +166,7 @@ struct DifferenceList *StringDiffChecker(String stringA, String stringB) {
         int startX = finalX - sequenceLen;
         int startY = finalY - sequenceLen;
         if (!(startX == finalX && startY == finalY)) {
-            print("equal : (%i , %i) -> (%i , %i)\n", startX, startY, finalX, finalY);
+//            print("equal : (%i , %i) -> (%i , %i)\n", startX, startY, finalX, finalY);
             struct EqualPoint point = {.startX=startX, .startY=startY, .endX=finalX, .endY=finalY};
             points[equalSequenceCount++] = point;
         }

@@ -5,7 +5,7 @@ String fileAddressMaker(String path, String filename);
 /**
  * @ifnot free the string you causes memory leak
  * @param path directory of your file
- * @param filename filename
+ * @param filename fileAddress
  * @return file data as a Text
  */
 String readFile(String path, String filename) {
@@ -27,6 +27,56 @@ String readFile(String path, String filename) {
     return result;
 
 }
+
+String readFile2(String fileAddress) {
+    FILE *file = fopen(fileAddress, "r");
+    if (!file) {
+        return NULL;
+    }
+    // read file line by line
+    String result = malloc(sizeof(char) * MAX_RESULT_SIZE);
+    String line = malloc(sizeof(char) * MAX_LINE_SIZE);
+    while ((line = fgets(line, MAX_LINE_SIZE, file))) {
+        strcat(result, line);
+    }
+    free(fileAddress);
+    free(line);
+    fclose(file);
+    return result;
+
+}
+/**
+ * return string lines in array of string
+ * @param path
+ * @param filename
+ * @param n
+ * @return
+ */
+String * readLines(String path, String filename, int * n ) {
+    String fileAddress = fileAddressMaker(path, filename);
+
+    FILE *file = fopen(fileAddress, "r");
+    if (!file) {
+        return NULL;
+    }
+    // read file line by line
+    String *result = malloc(sizeof(String *) * MAX_LINES_READ_LINE_SUPPORT);
+    int index = 0 ;
+    while(True){
+        String line = malloc(sizeof(char) * MAX_FILE_ADDRESS_READLINE);
+        if(!line) break;
+        result[index++] = line;
+
+    }
+
+    free(fileAddress);
+    fclose(file);
+    *n = index;
+    return result;
+
+}
+
+
 
 /**
  *
@@ -161,6 +211,18 @@ enum Boolean isFileExist(String path, String filename) {
     return notExist ? False : True;
 
 }
+/**
+ * check if the file is exist or not
+ * @param path
+ * @param filename
+ * @return 1 if exits and 0 for not exists
+ */
+enum Boolean isFileExist2(String fileAddress) {
+    struct stat buffer;
+    int notExist = stat(fileAddress, &buffer);
+    return notExist ? False : True;
+
+}
 
 /**
  *
@@ -195,12 +257,29 @@ String getLastModifiedOfFile(String path, String filename) {
     strftime(time, 50, "%Y-%m-%d %H:%M:%S", localtime(&attrib.st_mtime));
     sprintf(result, "%s", time);
 }
+/**
+ * get last modified of the file
+ * @attention free the result of this function
+ * @param path path/to/file
+ * @param filename
+ * @return last modified time of the file
+ */
+String getLastModifiedOfFile2(String fileAddress) {
+
+
+    String result = malloc(MODIFIED_TIME_LEN * sizeof(char));
+    struct stat attrib;
+    stat(fileAddress, &attrib);
+    char time[50];
+    strftime(time, 50, "%Y-%m-%d %H:%M:%S", localtime(&attrib.st_mtime));
+    sprintf(result, "%s", time);
+}
 
 /**
  *
  * @param path file directory
  * @param filename
- * @return concat path/filename
+ * @return concat path/fileAddress
  */
 String fileAddressMaker(String path, String filename) {
     // create file address
@@ -220,6 +299,15 @@ String fileAddressMaker(String path, String filename) {
  */
 enum Boolean deleteFile(String filePath, String filename) {
     String fileAddress = fileAddressMaker(filePath, filename);
+    int res = remove(fileAddress);
+    return res ? False : True;
+}
+/**
+ * delete given file address
+ * @param fileAddress
+ * @return
+ */
+enum Boolean deleteFile2(String fileAddress) {
     int res = remove(fileAddress);
     return res ? False : True;
 }
@@ -244,4 +332,69 @@ String * splitPath(String path,int* count){
     }
     *count= folderCount+1;
     return result;
+}
+/**
+ * you should scape directories with \\ not /
+ * @param path
+ */
+void mkdirs(String path){
+    if (isFolderExist(path) == False) {
+        String command = malloc(sizeof(char) * 100);
+        sprintf(command, "mkdir %s", path);
+        system(command);
+        free(command);
+    }
+}
+
+String extractFileNameWithFileAddress(String fileAddress){
+    int len = strlen(fileAddress);
+    int index = 0;
+    for (int i = len - 1; i >= 0; --i) {
+        if (fileAddress[i] == '\\' || fileAddress[i] == '/') {
+            index = i;
+            break;
+        }
+    }
+    return fileAddress+index;
+}
+
+String extractFilePathWithFileAddress(String fileAddress){
+    int len = strlen(fileAddress);
+
+    int index = 0;
+    int count = 0 ;
+    for (int i = len - 1; i >= 0; --i) {
+        if (fileAddress[i] == '\\' || fileAddress[i] == '/') {
+            index = i;
+            count++;
+            break;
+        }
+    }
+    if(count==False)
+        return ".";
+    String path = malloc(sizeof(char)* len);
+    strcpy(path , fileAddress);
+    path[index]='\0';
+    return path;
+}
+
+/*
+ * only works in windows powerd by robocopy package
+ */
+void deepCopy(String source , String destination,String exclude){
+    String command = malloc(sizeof(char)*300);
+    sprintf(command, "robocopy %s %s /E /XD %s > %s ", source,destination,exclude, TMP_RESULT_ADDRESS);
+    system(command);
+    free(command);
+    deleteFile2(TMP_RESULT_ADDRESS);
+}
+/*
+ * only works in windows powerd by robocopy package
+ */
+void fileCopy(String source , String destination, String filename){
+    String command = malloc(sizeof(char)*300);
+    sprintf(command, "robocopy %s %s %s > %s", source,destination,filename,TMP_RESULT_ADDRESS);
+    system(command);
+    free(command);
+    deleteFile2(TMP_RESULT_ADDRESS);
 }

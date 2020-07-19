@@ -8,9 +8,8 @@ enum COMMIT_FILE_STATUS {
 };
 
 struct CommitFileEntry {
-    String id;
-    String path;
-    String filename;
+    char id[40];
+    char fileAddress[200];
     char date[30];
     short int status;
 };

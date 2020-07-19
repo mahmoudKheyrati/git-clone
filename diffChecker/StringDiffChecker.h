@@ -11,10 +11,10 @@ struct Point {
     long x, y;
 };
 struct DifferenceSequence {
-    short int Type;
+    int Type;
     struct Point start;
     struct Point end;
-    String data;
+    char data[9999];
 };
 struct DifferencePoint {
     short int diffType;

@@ -6,4 +6,7 @@
 #include "./Core.h"
 
 String hashFile(String filePath, String filename);
+
+String hashFile2(String fileAddress);
+
 String hashString(String string);

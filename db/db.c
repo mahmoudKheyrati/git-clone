@@ -1,10 +1,10 @@
 #include "db.h"
 
 enum Boolean saveCustomConfigDatabase(struct ConfigDbEntry *entry, String path, String filename) {
-    if (isFolderExist(path)==False){
-        int folderCount = 0 ;
-        String * splited= splitPath(path,&folderCount);
-        makeDirectories(splited,folderCount);
+    if (isFolderExist(path) == False) {
+        int folderCount = 0;
+        String *splited = splitPath(path, &folderCount);
+        makeDirectories(splited, folderCount);
 
     }
     String fileAddress = fileAddressMaker(path, filename);
@@ -20,10 +20,10 @@ enum Boolean saveCustomConfigDatabase(struct ConfigDbEntry *entry, String path, 
 enum Boolean saveConfigDatabase(String path, String filename) {
     struct ConfigDbEntry dbEntry = {{DB_LOG_PATH, DB_LOG_DB_NAME}, {DB_COMMITS_PATH},
                                     {DB_LAST_EDIT_PATH, DB_LAST_EDIT_DB_NAME}, OBJECTS_FOLDER_PATH};
-    if (isFolderExist(path)==False){
-        int folderCount = 0 ;
-        String * splited= splitPath(path,&folderCount);
-        makeDirectories(splited,folderCount);
+    if (isFolderExist(path) == False) {
+        int folderCount = 0;
+        String *splited = splitPath(path, &folderCount);
+        makeDirectories(splited, folderCount);
 
     }
     String fileAddress = fileAddressMaker(path, filename);
@@ -37,7 +37,7 @@ enum Boolean saveConfigDatabase(String path, String filename) {
 }
 
 enum Boolean loadConfigDatabase(String path, String filename) {
-    configDatabase= malloc(sizeof(struct ConfigDbEntry));
+    configDatabase = malloc(sizeof(struct ConfigDbEntry));
     String fileAddress = fileAddressMaker(path, filename);
     FILE *file = fopen(fileAddress, "rb");
     if (!file) {
