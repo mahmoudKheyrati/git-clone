@@ -7,8 +7,9 @@ version control system that implement in c language .
 also have server application to store repositories (written in node js )
 and client application to push changes to the server (written in node js )
 link of server and client application :
+https://github.com/mahmoudKheyrati/git-clone-server-client
 
-# NOTE this application have some issue when adding new file 
+### NOTE this application have some issue when adding new file 
 # feel free to contribute 
 
 for my second semester at shiraz university ( priciples of programming course )
