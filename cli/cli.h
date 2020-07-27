@@ -53,3 +53,4 @@ void getCommitDetailCli(String commitId);
 
 void diffViewerCli(String commitId, String filename);
 
+void push(String repoName);

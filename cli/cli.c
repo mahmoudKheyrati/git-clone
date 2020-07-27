@@ -31,7 +31,9 @@ void runCli(int argc, String *argv) {
             getCommitDetailCli(argv[2]);
     }else if(strcmp(mainCommand,"diff")==0){
         diffViewerCli(argv[2],argv[3]);
-    } else {
+    } else if(strcmp(mainCommand,"push")==0){
+        push(argv[2]);
+    }else {
         // anything else , use need help
         help();
     }
@@ -487,6 +489,10 @@ void help() {
     printColored("  -show changes of this file inside this commit  \n", COLOR_YELLOW);
     print("\n");
 
+    printColored(" push repoName ", COLOR_BLOCK_BLUE);
+    printColored("  -push this repo to server  \n", COLOR_YELLOW);
+    print("\n");
+
 
 }
 
@@ -681,6 +687,13 @@ void diffViewerCli(String commitId, String filename){
         }
         changeConsoleColor(COLOR_WHITE);
     }
+}
+
+void push(String repoName){
+    String command = malloc(sizeof(char)*300);
+    sprintf(command, "node App.js %s", repoName);
+    system(command);
+    free(command);
 }
 
 /**
